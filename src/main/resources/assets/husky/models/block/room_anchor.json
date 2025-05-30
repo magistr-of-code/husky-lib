@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "husky:block/room_anchor_top",
+    "side": "husky:block/room_anchor_side"
+  }
+}

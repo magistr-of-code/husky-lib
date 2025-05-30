@@ -1,5 +1,8 @@
 package maxmag_change.husky;
 
+import maxmag_change.husky.block.ModBlocks;
+import maxmag_change.husky.block.entity.ModBlockEntities;
+import maxmag_change.husky.item.ModItems;
 import maxmag_change.husky.particles.HuskyParticleRegistry;
 import net.fabricmc.api.ModInitializer;
 
@@ -15,6 +18,9 @@ public class HuskyLib implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		HuskyParticleRegistry.PARTICLES.register();
+		ModBlocks.registerModBlocks();
+		ModItems.registerModItems();
+		ModBlockEntities.registerBlockEntities();
 
 		LOGGER.info("Hello Fabric world!");
 	}
