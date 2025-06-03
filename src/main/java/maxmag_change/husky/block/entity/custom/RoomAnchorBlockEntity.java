@@ -63,7 +63,7 @@ public class RoomAnchorBlockEntity extends BlockEntity {
             }
         }
 
-        user.sendMessage(Text.literal(encode(new Room(new Identifier("modId","roomPath"),this.getRoomSize(),this.getDoors()))));
+        user.sendMessage(Text.literal(encode(new Room(new Identifier("mod_id","room_path"),this.getRoomSize(),this.getDoors()))));
     }
 
     public static String encode(Room container) {

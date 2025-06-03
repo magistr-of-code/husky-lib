@@ -35,6 +35,7 @@ public class RoomAnchorEntityRenderer implements BlockEntityRenderer<RoomAnchorB
                 WorldRenderer.drawBox(matrices,vertexConsumer,box.minX+0.5,box.minY+0.5,box.minZ+0.5,box.maxX+0.5,box.maxY+0.5,box.maxZ+0.5, 1F, 0F, 0F, 1.0F, 0.5F, 0.5F, 0.5F);
 
                 for (BlockPos block : door.getBlocks()){
+                    block = block.add(door.getCenterBlock());
                     WorldRenderer.drawBox(matrices, vertexConsumer, block.getX(),block.getY(),block.getZ(),block.getX()+1,block.getY()+1,block.getZ()+1, 0.9F, 0.9F, 0.9F, 1.0F, 0.5F, 0.5F, 0.5F);
                 }
             }

@@ -42,17 +42,6 @@ public class Door {
         this.direction = direction;
     }
 
-    public List<BlockPos> getShape(){
-        List<BlockPos> blocks = this.getBlocks();
-        BlockPos center = this.getCenterBlock();
-
-        for(int i = 0; i < blocks.size(); ++i) {
-            blocks.set(i,blocks.get(i).subtract(center));
-        }
-
-        return blocks;
-    }
-
     public Pair<BlockRotation, Boolean> hasMatchingShape(List<BlockPos> blocks){
         boolean matches = false;
         BlockRotation rotation = BlockRotation.NONE;
@@ -79,7 +68,7 @@ public class Door {
 
     public boolean hasMatchingShapeWithRotation(List<BlockPos> shape, BlockRotation rotation){
 
-        List<BlockPos> blocks = this.getShape();
+        List<BlockPos> blocks = this.getBlocks();
 
         blocks.replaceAll(pos -> StructureTemplate.transformAround(pos, BlockMirror.NONE, rotation, BlockPos.ORIGIN));
 

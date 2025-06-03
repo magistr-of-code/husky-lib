@@ -83,7 +83,7 @@ public class DoorSelectorItem extends Item{
         //Normalize BlockPos
         for(int i = 0; i < blocks.size(); ++i) {
             NbtCompound block = blocks.getCompound(i);
-            BlockPos blockPos = Convertor.StringToBlock(block.getString("BlockPos")).subtract(roomAnchor.getPos());
+            BlockPos blockPos = Convertor.StringToBlock(block.getString("BlockPos")).subtract(Convertor.StringToBlock(stack.getOrCreateNbt().getString("CenterBlock")));
             block.putString("BlockPos",Convertor.BlockToString(blockPos));
             blocks.set(i,block);
         }

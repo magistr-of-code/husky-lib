@@ -22,7 +22,10 @@ public class ExampleMixin {
 		if (room!=null) {
 			HuskyLib.LOGGER.error("generating...");
 			HuskyLib.LOGGER.error(String.valueOf(room.getRoomSize()));
-			room.generate(minecraftServer.getOverworld(),new BlockPos(0,100,0), BlockRotation.CLOCKWISE_90);
+			room.generate(minecraftServer.getOverworld(),new BlockPos(0,100,1000), BlockRotation.CLOCKWISE_90);
+			room.generate(minecraftServer.getOverworld(),new BlockPos(0,100,1000), BlockRotation.COUNTERCLOCKWISE_90);
+			room.generate(minecraftServer.getOverworld(),new BlockPos(0,100,1000), BlockRotation.NONE);
+			room.generate(minecraftServer.getOverworld(),new BlockPos(0,100,1000), BlockRotation.CLOCKWISE_180);
 		} else {
 			HuskyLib.LOGGER.error("failed to find room :(");
 		}

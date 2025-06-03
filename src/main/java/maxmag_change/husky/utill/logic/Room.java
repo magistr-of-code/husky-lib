@@ -42,10 +42,12 @@ public class Room {
     public void generate(World world,BlockPos pos,BlockRotation rotation){
 
         //rotate room bounding box
-        BlockPos min = StructureTemplate.transformAround(BlockPos.ofFloored(roomSize.minX,roomSize.minY,roomSize.minZ),BlockMirror.NONE,rotation,pos);
-        BlockPos max = StructureTemplate.transformAround(BlockPos.ofFloored(roomSize.maxX,roomSize.maxY,roomSize.maxZ),BlockMirror.NONE,rotation,pos);
+        BlockPos min = StructureTemplate.transformAround(BlockPos.ofFloored(roomSize.minX,roomSize.minY,roomSize.minZ),BlockMirror.NONE,rotation,BlockPos.ORIGIN);
+        BlockPos max = StructureTemplate.transformAround(BlockPos.ofFloored(roomSize.maxX,roomSize.maxY,roomSize.maxZ),BlockMirror.NONE,rotation,BlockPos.ORIGIN);
 
         roomSize = new Box(min,max);
+
+        pos = pos.add(new BlockPos(0,0, (int) roomSize.maxZ));
 
         //place build
         if (world != null && !world.isClient()) {
@@ -60,20 +62,27 @@ public class Room {
             optional.get().place((ServerWorld)world,pos, pos,structurePlacementData,world.getRandom(),2);
         }
 
+        world.setBlockState(min.add(pos), Blocks.GREEN_WOOL.getDefaultState());
+        world.setBlockState(max.add(pos), Blocks.RED_WOOL.getDefaultState());
+
         //rotate doors and generate more rooms
         if (this.doors!=null) {
             for (Door door : this.doors){
                 if (door!=Door.EMPTY) {
-                    door.centerBlock = StructureTemplate.transformAround(door.getCenterBlock(),BlockMirror.NONE,rotation,pos);
+                    door.centerBlock = StructureTemplate.transformAround(door.getCenterBlock(),BlockMirror.NONE,rotation,BlockPos.ORIGIN.add(0,0, (int) roomSize.maxZ));
                     door.direction = rotation.rotate(door.direction);
 
                     for(int i = 0; i < door.getBlocks().size(); ++i) {
-                        door.blocks.set(i,StructureTemplate.transformAround(door.getBlocks().get(i),BlockMirror.NONE,rotation,pos));
+                        BlockPos block = door.getBlocks().get(i);
+
+                        door.blocks.set(i,StructureTemplate.transformAround(block,BlockMirror.NONE,rotation,BlockPos.ORIGIN.add(0,0, (int) roomSize.maxZ)));
                         //TODO stop placing wool
-                        world.setBlockState(pos.add(door.blocks.get(i)), Blocks.RED_WOOL.getDefaultState());
+                        world.setBlockState(pos.add(door.getBlocks().get(i)).add(door.getCenterBlock()), Blocks.CYAN_WOOL.getDefaultState());
                     }
 
-                    List<Pair<BlockRotation,Room>> matchingRooms = RoomRegistry.getWithMatchingDoorShapes(door.getShape());
+                    world.setBlockState(pos.add(door.centerBlock), Blocks.YELLOW_WOOL.getDefaultState());
+
+                    List<Pair<BlockRotation,Room>> matchingRooms = RoomRegistry.getWithMatchingDoorShapes(door.getBlocks());
 
                     if (!matchingRooms.isEmpty()){
                         Pair<BlockRotation,Room> randomRoomPair = matchingRooms.get(world.getRandom().nextBetween(0,matchingRooms.size()-1));
