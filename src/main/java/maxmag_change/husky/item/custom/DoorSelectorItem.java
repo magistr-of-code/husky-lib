@@ -6,12 +6,15 @@ import maxmag_change.husky.utill.MathHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.Objects;
 
 public class DoorSelectorItem extends Item{
     public DoorSelectorItem(Settings settings) {
@@ -23,21 +26,43 @@ public class DoorSelectorItem extends Item{
         NbtCompound nbt = context.getStack().getOrCreateNbt();
         NbtList nbtList = nbt.getList("Blocks", NbtElement.COMPOUND_TYPE);
 
+        String blockSTR = Convertor.BlockToString(context.getBlockPos());
+
         World world = context.getWorld();
         if (world.getBlockEntity(context.getBlockPos()) instanceof RoomAnchorBlockEntity roomAnchor){
-            giveData(roomAnchor,context.getStack());
-            nbt.put("Blocks",new NbtList());
+            if (!nbtList.isEmpty() && !nbt.getString("CenterBlock").isEmpty() && !nbt.getString("Direction").isEmpty()) {
+
+                giveData(roomAnchor,context.getStack());
+                nbt.put("Blocks",new NbtList());
+                nbt.putString("CenterBlock","");
+                nbt.putString("Direction","");
+            }
             return ActionResult.SUCCESS;
         }
 
-
-        NbtCompound block = new NbtCompound();
-        block.putByte("Block", (byte) (nbtList.size()+1));
-        block.putString("BlockPos", Convertor.BlockToString(context.getBlockPos()));
-        nbtList.add(block);
-        nbt.put("Blocks",nbtList);
+        if (hasMatching(nbtList,blockSTR)){
+            nbt.putString("CenterBlock",blockSTR);
+            nbt.putString("Direction",context.getSide().toString());
+        } else {
+            NbtCompound block = new NbtCompound();
+            block.putByte("Block", (byte) (nbtList.size()+1));
+            block.putString("BlockPos", blockSTR);
+            nbtList.add(block);
+            nbt.put("Blocks",nbtList);
+        }
 
         return ActionResult.SUCCESS;
+    }
+
+    public boolean hasMatching(NbtList nbtList,String string){
+        boolean value = false;
+        for(int i = 0; i < nbtList.size(); ++i) {
+            NbtCompound compound = nbtList.getCompound(i);
+            if (Objects.equals(compound.getString("BlockPos"), string)){
+                value=true;
+            }
+        }
+        return value;
     }
 
     public void giveData(RoomAnchorBlockEntity roomAnchor, ItemStack stack) {
@@ -48,6 +73,12 @@ public class DoorSelectorItem extends Item{
         for(;j < roomAnchor.getDoors().size() && !roomAnchor.getDoors().get(j).getBlocks().isEmpty(); ++j);
 
         compound.putByte("Door", (byte) j);
+
+        BlockPos centralPos = Convertor.StringToBlock(stack.getOrCreateNbt().getString("CenterBlock")).subtract(roomAnchor.getPos());
+        compound.putString("CenterBlock",Convertor.BlockToString(centralPos));
+        compound.putString("Direction",stack.getOrCreateNbt().getString("Direction"));
+
+        //blocks
         NbtList blocks = stack.getOrCreateNbt().getList("Blocks", NbtElement.COMPOUND_TYPE);
         //Normalize BlockPos
         for(int i = 0; i < blocks.size(); ++i) {

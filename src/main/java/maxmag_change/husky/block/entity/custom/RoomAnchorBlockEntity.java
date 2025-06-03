@@ -1,21 +1,33 @@
 package maxmag_change.husky.block.entity.custom;
 
 import com.google.common.base.MoreObjects;
+import com.google.gson.Gson;
 import maxmag_change.husky.HuskyLib;
 import maxmag_change.husky.block.entity.ModBlockEntities;
 import maxmag_change.husky.utill.Convertor;
 import maxmag_change.husky.utill.logic.Door;
+import maxmag_change.husky.utill.logic.Room;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import team.lodestar.lodestone.registry.common.particle.LodestoneParticleRegistry;
 import team.lodestar.lodestone.systems.easing.Easing;
 import team.lodestar.lodestone.systems.particle.builder.WorldParticleBuilder;
@@ -24,6 +36,7 @@ import team.lodestar.lodestone.systems.particle.data.color.ColorParticleData;
 import team.lodestar.lodestone.systems.particle.data.spin.SpinParticleData;
 
 import java.awt.*;
+import java.util.List;
 
 public class RoomAnchorBlockEntity extends BlockEntity {
     private DefaultedList<Door> doors;
@@ -37,6 +50,25 @@ public class RoomAnchorBlockEntity extends BlockEntity {
 
     public void tick(World world, BlockPos pos, BlockState state) {
 
+    }
+
+    public void onUse(PlayerEntity user, World world, BlockPos pos, BlockState state) {
+
+        DefaultedList<Door> notEmptyDoors = DefaultedList.of();
+
+        for (int i = 0; i < this.getDoors().size(); i++) {
+            Door door = this.doors.get(i);
+            if (!door.getBlocks().isEmpty()){
+                notEmptyDoors.add(i,door);
+            }
+        }
+
+        user.sendMessage(Text.literal(encode(new Room(new Identifier("modId","roomPath"),this.getRoomSize(),this.getDoors()))));
+    }
+
+    public static String encode(Room container) {
+        var gson = new Gson();
+        return gson.toJson(container);
     }
 
     public Box getRoomSize() {
@@ -112,5 +144,22 @@ public class RoomAnchorBlockEntity extends BlockEntity {
 
         nbt.put("Points", nbtCompound);
 
+    }
+
+    @Override
+    public @Nullable Packet<ClientPlayPacketListener> toUpdatePacket() {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeBlockPos(this.getPos());
+        buf.writeRegistryValue(Registries.BLOCK_ENTITY_TYPE,this.getType());
+        buf.writeNbt(this.getCustomData());
+        Packet<ClientPlayPacketListener> packet = new BlockEntityUpdateS2CPacket(buf);
+        return packet;
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        NbtCompound nbt = new NbtCompound();
+        writeNbt(nbt); // Same as in writeNbt
+        return nbt;
     }
 }
