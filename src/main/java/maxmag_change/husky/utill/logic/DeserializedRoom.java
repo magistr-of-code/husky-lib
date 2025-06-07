@@ -20,6 +20,6 @@ public class DeserializedRoom {
             DDoor.add(i,doors.get(i).toDoor());
         }
 
-        return new Room(structureName,roomSize,DDoor);
+        return new Room(this.structureName,this.roomSize,DDoor);
     }
 }

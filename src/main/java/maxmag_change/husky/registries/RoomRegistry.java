@@ -39,15 +39,11 @@ public class RoomRegistry {
         return registrations.get(identifier);
     }
 
-    public static List<Pair<BlockRotation,Room>> getWithMatchingDoorShapes(List<BlockPos> shape){
+    public static List<Pair<BlockRotation,Room>> getWithMatchingDoor(Door door){
         List<Pair<BlockRotation,Room>> rooms = new java.util.ArrayList<>(List.of());
-        registrations.forEach(((identifier, room) -> {
-            room.getDoors().forEach(door -> {
-                Pair<BlockRotation,Boolean> pair = door.hasMatchingShape(shape);
-                if (pair.getRight()){
-                    rooms.add(new Pair<>(pair.getLeft(),room));
-                }
-            });
+        Map<Identifier, Room> roomMap = registrations;
+        roomMap.forEach(((identifier, room) -> {
+            room.hasMatchingDoors(rooms,door);
         }));
 
         return rooms;
@@ -65,7 +61,7 @@ public class RoomRegistry {
             var identifier = entry.getKey();
             var resource = entry.getValue();
             try {
-                System.out.println("Checking resource: " + identifier);
+                HuskyLib.LOGGER.debug("Checking resource: " + identifier);
                 JsonReader reader = new JsonReader(new InputStreamReader(resource.getInputStream()));
                 Room container = decode(reader).toRoom();
                 var id = identifier

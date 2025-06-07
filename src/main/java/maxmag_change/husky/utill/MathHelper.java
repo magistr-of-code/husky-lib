@@ -3,6 +3,10 @@ package maxmag_change.husky.utill;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
@@ -12,6 +16,15 @@ public class MathHelper {
 
     public static boolean inBound(float value, float min, float max){
         return min < value && value < max;
+    }
+
+    public static Box rotateBox(Box box, BlockRotation rotation){
+        BlockPos min = StructureTemplate.transformAround(BlockPos.ofFloored(box.minX,box.minY,box.minZ), BlockMirror.NONE,rotation,BlockPos.ORIGIN);
+        BlockPos max = StructureTemplate.transformAround(BlockPos.ofFloored(box.maxX,box.maxY,box.maxZ),BlockMirror.NONE,rotation,BlockPos.ORIGIN);
+
+        box = new Box(min,max);
+
+        return box;
     }
 
     public static Vec3d matrixToVec(MatrixStack matrixStack) {

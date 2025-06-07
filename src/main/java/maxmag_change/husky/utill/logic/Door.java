@@ -1,6 +1,7 @@
 package maxmag_change.husky.utill.logic;
 
 import com.mojang.datafixers.kinds.IdF;
+import maxmag_change.husky.HuskyLib;
 import maxmag_change.husky.utill.Convertor;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -42,51 +43,59 @@ public class Door {
         this.direction = direction;
     }
 
-    public Pair<BlockRotation, Boolean> hasMatchingShape(List<BlockPos> blocks){
+    public Pair<BlockRotation, Boolean> hasMatchingShape(Door door){
         boolean matches = false;
         BlockRotation rotation = BlockRotation.NONE;
 
-        if (this.hasMatchingShapeWithRotation(blocks,BlockRotation.NONE)){
+        if (this.hasMatchingShapeWithRotation(door,BlockRotation.NONE)){
             matches=true;
             rotation=BlockRotation.NONE;
-        }
-        if (this.hasMatchingShapeWithRotation(blocks,BlockRotation.CLOCKWISE_90)){
+        } else if (this.hasMatchingShapeWithRotation(door,BlockRotation.CLOCKWISE_90)){
             matches=true;
             rotation=BlockRotation.CLOCKWISE_90;
-        }
-        if (this.hasMatchingShapeWithRotation(blocks,BlockRotation.COUNTERCLOCKWISE_90)){
-            matches=true;
-            rotation=BlockRotation.COUNTERCLOCKWISE_90;
-        }
-        if (this.hasMatchingShapeWithRotation(blocks,BlockRotation.CLOCKWISE_180)){
+        } else if (this.hasMatchingShapeWithRotation(door,BlockRotation.CLOCKWISE_180)){
             matches=true;
             rotation=BlockRotation.CLOCKWISE_180;
         }
 
+        //else if (this.hasMatchingShapeWithRotation(door,BlockRotation.COUNTERCLOCKWISE_90)){
+        //            matches=true;
+        //            rotation=BlockRotation.COUNTERCLOCKWISE_90;
+        //        }
+
         return new Pair<>(rotation,matches);
     }
 
-    public boolean hasMatchingShapeWithRotation(List<BlockPos> shape, BlockRotation rotation){
+    public boolean hasMatchingShapeWithRotation(Door door, BlockRotation rotation){
+        Door door1 = this.copy();
 
-        List<BlockPos> blocks = this.getBlocks();
+        List<BlockPos> blocks = door1.getBlocks();
+        List<BlockPos> shape = door.getBlocks();
 
-        blocks.replaceAll(pos -> StructureTemplate.transformAround(pos, BlockMirror.NONE, rotation, BlockPos.ORIGIN));
+        shape.replaceAll(pos -> StructureTemplate.transformAround(pos, BlockMirror.NONE, rotation, BlockPos.ORIGIN));
 
-        return shape == blocks;
+        if (blocks.size()!=shape.size()){
+            return false;
+        }
 
-//        voxelShape.forEachBox(new VoxelShapes.BoxConsumer() {
-//            @Override
-//            public void consume(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
-//                Box box = new Box(minX,minY,minZ,maxX,maxY,maxZ);
-//                Vec3d min = StructureTemplate.transformAround(new Vec3d(minX,minY,minZ),BlockMirror.NONE, BlockRotation.NONE, BlockPos.ofFloored(voxelShape.getBoundingBox().getCenter()));
-//                Vec3d max = StructureTemplate.transformAround(new Vec3d(maxX,maxY,maxZ),BlockMirror.NONE, BlockRotation.NONE, BlockPos.ofFloored(voxelShape.getBoundingBox().getCenter()));
-//                box = new Box(min,max);
-//                newVoxelShape[0] = VoxelShapes.union(newVoxelShape[0],VoxelShapes.cuboid(box));
-//            }
-//        });
-//
-//        return voxelShape1.equals(newVoxelShape[0]);
+        //HuskyLib.LOGGER.error(rotation.rotate(door.getDirection()).toString());
+        //rotation.rotate(door.getDirection()) == this.getDirection().getOpposite();
 
+        return rotation.rotate(door.getDirection()) == door1.getDirection().getOpposite() && hasAllElements(blocks,shape) && hasAllElements(shape,blocks);
+//        return true;
+
+    }
+
+    public static boolean hasAllElements(List<BlockPos> blocks2,List<BlockPos> shape2){
+        List<BlockPos> blocks = blocks2;
+        List<BlockPos> shape = shape2;
+
+        //blocks.forEach(shape::remove);
+        for(int i = 0; i < blocks.size(); ++i) {
+            shape.remove(blocks.get(i));
+        }
+
+        return shape.isEmpty();
     }
 
     public DefaultedList<BlockPos> getBlocks() {
@@ -103,6 +112,10 @@ public class Door {
 
     public void setBlocks(DefaultedList<BlockPos> blocks) {
         this.blocks = blocks;
+    }
+
+    public Door copy(){
+        return new Door(this.getBlocks(),this.getCenterBlock(),this.getDirection());
     }
 
     public void readNbt(NbtCompound nbtCompound){
