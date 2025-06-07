@@ -20,7 +20,7 @@ import net.minecraft.util.shape.VoxelShapes;
 
 import java.util.List;
 
-public class Door {
+public class Door implements Cloneable{
     DefaultedList<BlockPos> blocks = DefaultedList.of();
     BlockPos centerBlock = BlockPos.ORIGIN;
     Direction direction = Direction.EAST;
@@ -67,10 +67,9 @@ public class Door {
     }
 
     public boolean hasMatchingShapeWithRotation(Door door, BlockRotation rotation){
-        Door door1 = this.copy();
 
-        List<BlockPos> blocks = door1.getBlocks();
-        List<BlockPos> shape = door.getBlocks();
+        List<BlockPos> blocks = this.clone().getBlocks();
+        List<BlockPos> shape = door.clone().getBlocks();
 
         shape.replaceAll(pos -> StructureTemplate.transformAround(pos, BlockMirror.NONE, rotation, BlockPos.ORIGIN));
 
@@ -81,7 +80,7 @@ public class Door {
         //HuskyLib.LOGGER.error(rotation.rotate(door.getDirection()).toString());
         //rotation.rotate(door.getDirection()) == this.getDirection().getOpposite();
 
-        return rotation.rotate(door.getDirection()) == door1.getDirection().getOpposite() && hasAllElements(blocks,shape) && hasAllElements(shape,blocks);
+        return rotation.rotate(door.getDirection()) == this.getDirection().getOpposite() && hasAllElements(blocks,shape) && hasAllElements(shape,blocks);
 //        return true;
 
     }
@@ -114,10 +113,6 @@ public class Door {
         this.blocks = blocks;
     }
 
-    public Door copy(){
-        return new Door(this.getBlocks(),this.getCenterBlock(),this.getDirection());
-    }
-
     public void readNbt(NbtCompound nbtCompound){
         this.direction = Direction.byName(nbtCompound.getString("Direction"));
         this.centerBlock = Convertor.StringToBlock(nbtCompound.getString("CenterBlock"));
@@ -148,6 +143,26 @@ public class Door {
             }
 
             nbt.put("Blocks", nbtList);
+        }
+    }
+
+    @Override
+    public Door clone() {
+        try {
+            Door door = (Door) super.clone();
+
+            DefaultedList<BlockPos> blocks = DefaultedList.of();
+
+            for (int i = 0; i < door.getBlocks().size(); i++) {
+                BlockPos blockPos = door.getBlocks().get(i);
+                if (blockPos!=BlockPos.ORIGIN){
+                    blocks.add(i,new BlockPos(door.getBlocks().get(i)));
+                }
+            }
+
+            return new Door(blocks,new BlockPos(this.getCenterBlock()),door.getDirection());
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
         }
     }
 }
