@@ -28,7 +28,7 @@ public class RoomGeneratorItem extends Item {
             Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"crossroad1"));
             if (room!=null) {
                 HuskyLib.LOGGER.error("generating...");
-                Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.CLOCKWISE_90, context.getStack().getOrCreateNbt().getInt("forward"));
+                Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.NONE, context.getStack().getOrCreateNbt().getInt("forward"));
             }
         }
 

@@ -1,16 +1,13 @@
 package maxmag_change.husky.block.entity.custom;
 
-import com.google.common.base.MoreObjects;
 import com.google.gson.Gson;
-import maxmag_change.husky.HuskyLib;
-import maxmag_change.husky.block.entity.ModBlockEntities;
+import maxmag_change.husky.block.entity.HuskyBlockEntities;
 import maxmag_change.husky.utill.Convertor;
 import maxmag_change.husky.utill.logic.Door;
 import maxmag_change.husky.utill.logic.Room;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -28,22 +25,13 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import team.lodestar.lodestone.registry.common.particle.LodestoneParticleRegistry;
-import team.lodestar.lodestone.systems.easing.Easing;
-import team.lodestar.lodestone.systems.particle.builder.WorldParticleBuilder;
-import team.lodestar.lodestone.systems.particle.data.GenericParticleData;
-import team.lodestar.lodestone.systems.particle.data.color.ColorParticleData;
-import team.lodestar.lodestone.systems.particle.data.spin.SpinParticleData;
-
-import java.awt.*;
-import java.util.List;
 
 public class RoomAnchorBlockEntity extends BlockEntity {
     private DefaultedList<Door> doors;
     private Box roomSize;
 
     public RoomAnchorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ROOM_ANCHOR_BLOCK_ENTITY, pos, state);
+        super(HuskyBlockEntities.ROOM_ANCHOR_BLOCK_ENTITY, pos, state);
         this.doors = DefaultedList.ofSize(27, Door.EMPTY);
         this.roomSize = new Box(Vec3d.ZERO,Vec3d.ZERO);
     }

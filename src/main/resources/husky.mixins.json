@@ -3,12 +3,12 @@
   "package": "maxmag_change.husky.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ExampleMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "client": [
-    "BlockEntity"
+    "client.BlockEntity",
+    "client.BlockRenderManagerAccessor"
   ]
 }

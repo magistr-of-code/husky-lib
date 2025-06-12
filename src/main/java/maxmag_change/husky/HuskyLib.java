@@ -1,9 +1,10 @@
 package maxmag_change.husky;
 
-import maxmag_change.husky.block.ModBlocks;
-import maxmag_change.husky.block.entity.ModBlockEntities;
-import maxmag_change.husky.item.ModItems;
+import maxmag_change.husky.block.HuskyBlocks;
+import maxmag_change.husky.block.entity.HuskyBlockEntities;
+import maxmag_change.husky.item.HuskyItems;
 import maxmag_change.husky.particles.HuskyParticleRegistry;
+import maxmag_change.husky.registries.HuskySounds;
 import maxmag_change.husky.registries.RoomRegistry;
 import net.fabricmc.api.ModInitializer;
 
@@ -21,20 +22,14 @@ public class HuskyLib implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		HuskyParticleRegistry.PARTICLES.register();
-		ModBlocks.registerModBlocks();
-		ModItems.registerModItems();
-		ModBlockEntities.registerBlockEntities();
+		HuskySounds.initialize();
+		HuskyBlocks.registerModBlocks();
+		HuskyItems.registerModItems();
+		HuskyBlockEntities.registerBlockEntities();
 
 		ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer) -> {
 			RoomRegistry.loadRooms(minecraftServer.getResourceManager());
 		});
-
-		ServerLifecycleEvents.SERVER_STARTED.register(new ServerLifecycleEvents.ServerStarted() {
-            @Override
-            public void onServerStarted(MinecraftServer minecraftServer) {
-
-            }
-        });
 
 		LOGGER.info("Hello Fabric world!");
 	}

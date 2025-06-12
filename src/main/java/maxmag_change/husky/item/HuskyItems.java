@@ -14,7 +14,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
-public class ModItems {
+public class HuskyItems {
     public static final Item DOOR_SELECTOR = registerItem("door_selector",new DoorSelectorItem(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item ROOM_SELECTOR = registerItem("room_selector",new RoomSelectorItem(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item ROOM_GENERATOR = registerItem("room_generator",new RoomGeneratorItem(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)));
@@ -31,7 +31,7 @@ public class ModItems {
 
     public static void registerModItems() {
 
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(ModItems::addItemsToIngredientItemGroup);
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(HuskyItems::addItemsToIngredientItemGroup);
 
         HuskyLib.LOGGER.info("Registering mod items for " + HuskyLib.MOD_ID);
     }

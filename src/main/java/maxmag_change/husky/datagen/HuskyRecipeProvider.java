@@ -7,9 +7,9 @@ import net.minecraft.data.server.recipe.RecipeJsonProvider;
 
 import java.util.function.Consumer;
 
-public class ModRecipeProvider extends FabricRecipeProvider {
+public class HuskyRecipeProvider extends FabricRecipeProvider {
 
-    public ModRecipeProvider(FabricDataOutput output) {
+    public HuskyRecipeProvider(FabricDataOutput output) {
         super(output);
     }
 

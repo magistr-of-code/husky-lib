@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonReader;
 import maxmag_change.husky.HuskyLib;
 import maxmag_change.husky.utill.logic.DeserializedRoom;
 import maxmag_change.husky.utill.logic.Door;
+import maxmag_change.husky.utill.logic.MatchingRoom;
 import maxmag_change.husky.utill.logic.Room;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
@@ -39,8 +40,8 @@ public class RoomRegistry {
         return registrations.get(identifier);
     }
 
-    public static List<Pair<BlockRotation,Room>> getWithMatchingDoor(Door door){
-        List<Pair<BlockRotation,Room>> rooms = new java.util.ArrayList<>(List.of());
+    public static List<MatchingRoom> getWithMatchingDoor(Door door){
+        List<MatchingRoom> rooms = new java.util.ArrayList<>(List.of());
         Map<Identifier, Room> roomMap = registrations;
         roomMap.forEach(((identifier, room) -> {
             room.hasMatchingDoors(rooms,door);

@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "husky:block/max_plush",
+      "y": 0
+    },
+    "facing=north": {
+      "model": "husky:block/max_plush",
+      "y": 270
+    },
+    "facing=south": {
+      "model": "husky:block/max_plush",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "husky:block/max_plush",
+      "y": 180
+    }
+  }
+}

@@ -47,21 +47,20 @@ public class Door implements Cloneable{
         boolean matches = false;
         BlockRotation rotation = BlockRotation.NONE;
 
-        if (this.hasMatchingShapeWithRotation(door,BlockRotation.NONE)){
-            matches=true;
-            rotation=BlockRotation.NONE;
-        } else if (this.hasMatchingShapeWithRotation(door,BlockRotation.CLOCKWISE_90)){
-            matches=true;
-            rotation=BlockRotation.CLOCKWISE_90;
-        } else if (this.hasMatchingShapeWithRotation(door,BlockRotation.CLOCKWISE_180)){
-            matches=true;
-            rotation=BlockRotation.CLOCKWISE_180;
+        if (this.hasMatchingShapeWithRotation(door,BlockRotation.NONE)) {
+            matches = true;
+            rotation = BlockRotation.NONE;
+        } else if (this.hasMatchingShapeWithRotation(door,BlockRotation.CLOCKWISE_90)) {
+            matches = true;
+            rotation = BlockRotation.CLOCKWISE_90;
         }
-
-        //else if (this.hasMatchingShapeWithRotation(door,BlockRotation.COUNTERCLOCKWISE_90)){
-        //            matches=true;
-        //            rotation=BlockRotation.COUNTERCLOCKWISE_90;
-        //        }
+//        } else if (this.hasMatchingShapeWithRotation(door,BlockRotation.CLOCKWISE_180)){
+//            matches=true;
+//            rotation=BlockRotation.CLOCKWISE_180;
+//        } else if (this.hasMatchingShapeWithRotation(door,BlockRotation.COUNTERCLOCKWISE_90)){
+//            matches=true;
+//            rotation=BlockRotation.COUNTERCLOCKWISE_90;
+//        }
 
         return new Pair<>(rotation,matches);
     }
@@ -80,14 +79,18 @@ public class Door implements Cloneable{
         //HuskyLib.LOGGER.error(rotation.rotate(door.getDirection()).toString());
         //rotation.rotate(door.getDirection()) == this.getDirection().getOpposite();
 
-        return rotation.rotate(door.getDirection()) == this.getDirection().getOpposite() && hasAllElements(blocks,shape) && hasAllElements(shape,blocks);
+        boolean test1 = rotation.rotate(door.getDirection()) == this.getDirection();
+        boolean test2 = hasAllElements(blocks,shape);
+        boolean test3 = hasAllElements(shape,blocks);
+
+        return test1 && test2 && test3;
 //        return true;
 
     }
 
     public static boolean hasAllElements(List<BlockPos> blocks2,List<BlockPos> shape2){
-        List<BlockPos> blocks = blocks2;
-        List<BlockPos> shape = shape2;
+        List<BlockPos> blocks = new java.util.ArrayList<>(List.copyOf(blocks2));
+        List<BlockPos> shape = new java.util.ArrayList<>(List.copyOf(shape2));
 
         //blocks.forEach(shape::remove);
         for(int i = 0; i < blocks.size(); ++i) {

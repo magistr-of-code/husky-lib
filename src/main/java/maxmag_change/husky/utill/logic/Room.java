@@ -1,6 +1,7 @@
 package maxmag_change.husky.utill.logic;
 
 import maxmag_change.husky.HuskyLib;
+import maxmag_change.husky.registries.RoomRegistry;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePlacementData;
@@ -99,6 +100,7 @@ public class Room implements Cloneable {
         }
 
         //Place room's corners
+        //TODO stop placing wool
         world.setBlockState(min.add(pos), Blocks.GREEN_WOOL.getDefaultState());
         world.setBlockState(max.add(pos), Blocks.RED_WOOL.getDefaultState());
 
@@ -127,22 +129,29 @@ public class Room implements Cloneable {
                 world.setBlockState(pos.add(door.getCenterBlock()), Blocks.YELLOW_WOOL.getDefaultState());
 
                 //Generate additional rooms
-                if (forward-1>0) {
+                if (forward-1>0  && ii==2) {
                     //TODO make work
-                    List<Pair<BlockRotation,Room>> matchingRooms = List.of(new Pair<>(BlockRotation.CLOCKWISE_90,new Room(new Identifier(HuskyLib.MOD_ID,"vanilla/crossroad1"))),new Pair<>(BlockRotation.CLOCKWISE_90,new Room(new Identifier(HuskyLib.MOD_ID,"vanilla/crossroad1"))));//RoomRegistry.getWithMatchingDoor(door.copy());
+                    List<MatchingRoom> matchingRooms = RoomRegistry.getWithMatchingDoor(door.clone()); //List.of(new Pair<>(BlockRotation.CLOCKWISE_90,new Room(new Identifier(HuskyLib.MOD_ID,"vanilla/crossroad1"))),new Pair<>(BlockRotation.CLOCKWISE_90,new Room(new Identifier(HuskyLib.MOD_ID,"vanilla/crossroad1"))));
 
                     if (!matchingRooms.isEmpty()){
                         matchingRooms.forEach(matchingRoom->{
-                            HuskyLib.LOGGER.error(matchingRoom.getRight().getStructureName().toString());
+                            //TODO stop logging
+                            HuskyLib.LOGGER.error(matchingRoom.getRoom().getStructureName().toString());
                         });
-                        Pair<BlockRotation,Room> randomRoomPair = matchingRooms.get(world.getRandom().nextBetween(0,matchingRooms.size()-1));
-                        BlockRotation randomRotation = randomRoomPair.getLeft();
-                        Room randomRoom = randomRoomPair.getRight().clone();
+                        MatchingRoom randomRoomPair = matchingRooms.get(world.getRandom().nextBetween(0,matchingRooms.size()-1));
+                        BlockRotation randomRotation = randomRoomPair.getRotation();
+                        Room randomRoom = randomRoomPair.getRoom().clone();
+                        Door randomDoor = randomRoom.getDoors().get(randomRoomPair.getMatchingDoorIndex());
+
                         BlockPos roomPoint = pos;
-//                        roomPoint = roomPoint.add(door.direction.getVector());
-                        roomPoint = roomPoint.add(door.getDirection().getVector().multiply(7));//(int) MathHelper.rotateBox(randomRoom.getRoomSize(),randomRotation).getZLength()));
+
+                        roomPoint = roomPoint.add(door.getCenterBlock()).subtract(StructureTemplate.transformAround(randomDoor.getCenterBlock(), BlockMirror.NONE, randomRotation, BlockPos.ORIGIN));
                         //roomPoint = roomPoint.add(0,0, (int) randomRoom.roomSize.minZ);
-                        randomRoom.generate(world, roomPoint,randomRotation,forward-1);
+
+                        randomRoom.getDoors().set(randomRoomPair.getMatchingDoorIndex(),Door.EMPTY);
+
+                        Room.protectedGenerate(randomRoom,world, roomPoint,randomRotation,forward-1);
+                        //TODO stop logging
                         HuskyLib.LOGGER.error(roomPoint.toString());
                     } else {
                         HuskyLib.LOGGER.error("no matching rooms found");
@@ -154,13 +163,13 @@ public class Room implements Cloneable {
         }
     }
 
-    public void hasMatchingDoors(List<Pair<BlockRotation,Room>> pairs,Door door){
-        Room room = this.clone();
-        for(int i = 0; i < room.getDoors().size(); ++i) {
+    public void hasMatchingDoors(List<MatchingRoom> pairs,Door door){
+        for(int i = 0; i < this.getDoors().size(); ++i) {
+            Room room = this.clone();
             Pair<BlockRotation, Boolean> pair = room.getDoors().get(i).hasMatchingShape(door);
             if (pair.getRight()) {
-                room.getDoors().set(i,Door.EMPTY);
-                pairs.add(new Pair<>(pair.getLeft(), room));
+                pairs.add(new MatchingRoom(room,pair.getLeft(),i));
+                return;
             }
         }
 

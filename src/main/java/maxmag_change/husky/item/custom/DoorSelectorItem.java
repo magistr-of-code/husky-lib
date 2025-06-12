@@ -2,11 +2,9 @@ package maxmag_change.husky.item.custom;
 
 import maxmag_change.husky.block.entity.custom.RoomAnchorBlockEntity;
 import maxmag_change.husky.utill.Convertor;
-import maxmag_change.husky.utill.MathHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;

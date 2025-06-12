@@ -1,0 +1,10 @@
+{
+  "parry": {
+    "subtitle": "husky.parry",
+    "sounds": ["husky:parry"]
+  },
+  "max_squish": {
+    "subtitle": "husky.max_squish",
+    "sounds": ["husky:max_squish"]
+  }
+}

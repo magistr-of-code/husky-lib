@@ -1,4 +1,4 @@
-package maxmag_change.husky.mixin;
+package maxmag_change.husky.mixin.client;
 
 
 import net.minecraft.client.MinecraftClient;

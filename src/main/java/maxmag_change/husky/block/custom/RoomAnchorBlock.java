@@ -1,6 +1,6 @@
 package maxmag_change.husky.block.custom;
 
-import maxmag_change.husky.block.entity.ModBlockEntities;
+import maxmag_change.husky.block.entity.HuskyBlockEntities;
 import maxmag_change.husky.block.entity.custom.RoomAnchorBlockEntity;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockRenderType;
@@ -9,7 +9,6 @@ import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -37,7 +36,7 @@ public class RoomAnchorBlock extends BlockWithEntity implements BlockEntityProvi
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, ModBlockEntities.ROOM_ANCHOR_BLOCK_ENTITY,
+        return checkType(type, HuskyBlockEntities.ROOM_ANCHOR_BLOCK_ENTITY,
                 (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
     }
 

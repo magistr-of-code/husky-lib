@@ -12,7 +12,7 @@ import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
-public class MathHelper {
+public class HuskyMathHelper {
 
     public static boolean inBound(float value, float min, float max){
         return min < value && value < max;
@@ -22,9 +22,7 @@ public class MathHelper {
         BlockPos min = StructureTemplate.transformAround(BlockPos.ofFloored(box.minX,box.minY,box.minZ), BlockMirror.NONE,rotation,BlockPos.ORIGIN);
         BlockPos max = StructureTemplate.transformAround(BlockPos.ofFloored(box.maxX,box.maxY,box.maxZ),BlockMirror.NONE,rotation,BlockPos.ORIGIN);
 
-        box = new Box(min,max);
-
-        return box;
+        return new Box(min,max);
     }
 
     public static Vec3d matrixToVec(MatrixStack matrixStack) {
