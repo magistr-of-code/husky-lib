@@ -25,10 +25,10 @@ public class RoomGeneratorItem extends Item {
         World world = context.getWorld();
 
         if (!world.isClient()) {
-            Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"crossroad1"));
+            Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"crossroad2"));
             if (room!=null) {
                 HuskyLib.LOGGER.error("generating...");
-                Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.NONE, context.getStack().getOrCreateNbt().getInt("forward"));
+                Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.NONE, 2,context.getStack().getOrCreateNbt().getInt("forward")/2-1);
             }
         }
 
@@ -38,16 +38,18 @@ public class RoomGeneratorItem extends Item {
 
     @Override
     public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-        NbtCompound nbt = miner.getMainHandStack().getOrCreateNbt();
+        if (!world.isClient()) {
+            NbtCompound nbt = miner.getMainHandStack().getOrCreateNbt();
 
-        if (nbt != null) {
-            int count = nbt.getInt("forward");
-            if (count>=3){
-                nbt.putInt("forward", 0);
-            } else {
-                nbt.putInt("forward", count+1);
+            if (nbt != null) {
+                int count = nbt.getInt("forward");
+                if (count>=8){
+                    nbt.putInt("forward", 1);
+                } else {
+                    nbt.putInt("forward", count+1);
+                }
+                miner.sendMessage(Text.literal(String.valueOf(nbt.getInt("forward"))),true);
             }
-            miner.sendMessage(Text.literal(String.valueOf(nbt.getInt("forward"))),true);
         }
         return false;
     }

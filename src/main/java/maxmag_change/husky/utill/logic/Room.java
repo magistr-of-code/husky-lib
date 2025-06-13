@@ -3,6 +3,7 @@ package maxmag_change.husky.utill.logic;
 import maxmag_change.husky.HuskyLib;
 import maxmag_change.husky.registries.RoomRegistry;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
@@ -14,6 +15,8 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -67,10 +70,15 @@ public class Room implements Cloneable {
 
     public static void protectedGenerate(Room room, World world, BlockPos pos, BlockRotation rotation, int forward){
         Room room1 = room.clone();
-        room1.generate(world,pos,rotation,forward);
+        room1.generate(world,pos,rotation,forward,1);
     }
 
-    public void generate(World world,BlockPos pos,BlockRotation rotation,int forward){
+    public static void protectedGenerate(Room room, World world, BlockPos pos, BlockRotation rotation, int forward,int smth){
+        Room room1 = room.clone();
+        room1.generate(world,pos,rotation,forward,smth);
+    }
+
+    public void generate(World world,BlockPos pos,BlockRotation rotation,int forward,int smth){
         //Don't generate if forward is set to 0
         if (forward<=0){
             return;
@@ -123,13 +131,17 @@ public class Room implements Cloneable {
 
                     door.blocks.set(i,StructureTemplate.transformAround(block,BlockMirror.NONE,rotation,BlockPos.ORIGIN));
                     //TODO stop placing wool
-                    world.setBlockState(pos.add(door.getBlocks().get(i)).add(door.getCenterBlock()), Blocks.CYAN_WOOL.getDefaultState());
+                    if (forward==1){
+                        world.setBlockState(pos.add(door.getBlocks().get(i)).add(door.getCenterBlock()), Blocks.RED_WOOL.getDefaultState());
+                    } else {
+                        world.setBlockState(pos.add(door.getBlocks().get(i)).add(door.getCenterBlock()), Blocks.CYAN_WOOL.getDefaultState());
+                    }
                 }
 
                 world.setBlockState(pos.add(door.getCenterBlock()), Blocks.YELLOW_WOOL.getDefaultState());
 
                 //Generate additional rooms
-                if (forward-1>0  && ii==2) {
+                if (forward-1>0  && ii==smth) {
                     //TODO make work
                     List<MatchingRoom> matchingRooms = RoomRegistry.getWithMatchingDoor(door.clone()); //List.of(new Pair<>(BlockRotation.CLOCKWISE_90,new Room(new Identifier(HuskyLib.MOD_ID,"vanilla/crossroad1"))),new Pair<>(BlockRotation.CLOCKWISE_90,new Room(new Identifier(HuskyLib.MOD_ID,"vanilla/crossroad1"))));
 
@@ -142,11 +154,13 @@ public class Room implements Cloneable {
                         BlockRotation randomRotation = randomRoomPair.getRotation();
                         Room randomRoom = randomRoomPair.getRoom().clone();
                         Door randomDoor = randomRoom.getDoors().get(randomRoomPair.getMatchingDoorIndex());
+                        BlockPos centerRandomDoor = StructureTemplate.transformAround(randomDoor.getCenterBlock(), BlockMirror.NONE, randomRotation, BlockPos.ORIGIN);
 
-                        BlockPos roomPoint = pos;
+                        BlockPos roomPoint = door.getCenterBlock().add(pos);
 
-                        roomPoint = roomPoint.add(door.getCenterBlock()).subtract(StructureTemplate.transformAround(randomDoor.getCenterBlock(), BlockMirror.NONE, randomRotation, BlockPos.ORIGIN));
-                        //roomPoint = roomPoint.add(0,0, (int) randomRoom.roomSize.minZ);
+                        roomPoint = roomPoint.subtract(centerRandomDoor.add(pos));
+
+                        roomPoint = roomPoint.add(pos);
 
                         randomRoom.getDoors().set(randomRoomPair.getMatchingDoorIndex(),Door.EMPTY);
 

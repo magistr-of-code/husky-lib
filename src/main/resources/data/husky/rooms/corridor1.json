@@ -48,19 +48,19 @@
       "centerBlock": {
         "x": 3,
         "y": 4,
-        "z": 0
+        "z": 7
       },
-      "direction": "SOUTH"
+      "direction": "NORTH"
     },
     {
       "blocks": [
         {
-          "x": 1,
+          "x": -1,
           "y": -1,
           "z": 0
         },
         {
-          "x": 1,
+          "x": -1,
           "y": 0,
           "z": 0
         },
@@ -75,12 +75,12 @@
           "z": 0
         },
         {
-          "x": -1,
+          "x": 1,
           "y": -1,
           "z": 0
         },
         {
-          "x": -1,
+          "x": 1,
           "y": 0,
           "z": 0
         }
@@ -88,9 +88,9 @@
       "centerBlock": {
         "x": 3,
         "y": 4,
-        "z": 7
+        "z": 0
       },
-      "direction": "NORTH"
+      "direction": "SOUTH"
     }
   ]
 }
