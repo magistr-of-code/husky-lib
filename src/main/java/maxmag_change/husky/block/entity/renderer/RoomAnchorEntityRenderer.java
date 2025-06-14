@@ -29,7 +29,7 @@ public class RoomAnchorEntityRenderer implements BlockEntityRenderer<RoomAnchorB
         for(Door door : entity.getDoors()) {
             if (!door.getBlocks().isEmpty()) {
                 Box box = new Box(door.getCenterBlock(),door.getCenterBlock());
-                Direction direction = door.getDirection().getOpposite();
+                Direction direction = door.getDirection();
                 box = box.stretch(direction.getOffsetX()*1.5,direction.getOffsetY()*1.5,direction.getOffsetZ()*1.5);
                 box = box.stretch(direction.getOffsetX()*-0.6,direction.getOffsetY()*-0.6,direction.getOffsetZ()*-0.6);
                 WorldRenderer.drawBox(matrices,vertexConsumer,box.minX+0.5,box.minY+0.5,box.minZ+0.5,box.maxX+0.5,box.maxY+0.5,box.maxZ+0.5, 1F, 0F, 0F, 1.0F, 0.5F, 0.5F, 0.5F);

@@ -45,13 +45,14 @@ public class RoomAnchorBlockEntity extends BlockEntity {
         DefaultedList<Door> notEmptyDoors = DefaultedList.of();
 
         for (int i = 0; i < this.getDoors().size(); i++) {
-            Door door = this.doors.get(i);
+            Door door = this.getDoors().get(i);
             if (!door.getBlocks().isEmpty()){
                 notEmptyDoors.add(i,door);
             }
         }
 
-        user.sendMessage(Text.literal(encode(new Room(new Identifier("mod_id","room_path"),this.getRoomSize(),this.getDoors()))));
+
+        user.sendMessage(Text.literal(encode(new Room(new Identifier("mod_id","room_path"),this.getRoomSize(),notEmptyDoors))));
     }
 
     public static String encode(Room container) {

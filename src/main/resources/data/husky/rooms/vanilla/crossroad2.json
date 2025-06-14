@@ -50,7 +50,7 @@
         "y": 4,
         "z": 0
       },
-      "direction": "SOUTH"
+      "direction": "NORTH"
     },
     {
       "blocks": [
@@ -90,7 +90,7 @@
         "y": 4,
         "z": 3
       },
-      "direction": "WEST"
+      "direction": "EAST"
     },
     {
       "blocks": [
@@ -130,7 +130,7 @@
         "y": 4,
         "z": 6
       },
-      "direction": "NORTH"
+      "direction": "SOUTH"
     },
     {
       "blocks": [
@@ -170,7 +170,7 @@
         "y": 4,
         "z": 3
       },
-      "direction": "EAST"
+      "direction": "WEST"
     }
   ]
 }

@@ -40,7 +40,7 @@ public class DoorSelectorItem extends Item{
 
         if (hasMatching(nbtList,blockSTR)){
             nbt.putString("CenterBlock",blockSTR);
-            nbt.putString("Direction",context.getSide().toString());
+            nbt.putString("Direction",context.getSide().getOpposite().toString());
         } else {
             NbtCompound block = new NbtCompound();
             block.putByte("Block", (byte) (nbtList.size()+1));

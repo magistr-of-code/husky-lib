@@ -1,7 +1,7 @@
 {
   "structureName": {
     "namespace": "husky",
-    "path": "vanilla/test"
+    "path": "test/horizontal"
   },
   "roomSize": {
     "minX": 0,

@@ -42,11 +42,13 @@ public class RoomAnchorBlock extends BlockWithEntity implements BlockEntityProvi
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (player.getStackInHand(hand).isEmpty()) {
-            if (world.getBlockEntity(pos) instanceof RoomAnchorBlockEntity roomAnchor){
-                roomAnchor.onUse(player,world,pos,state);
+        if (!world.isClient()) {
+            if (player.getStackInHand(hand).isEmpty()) {
+                if (world.getBlockEntity(pos) instanceof RoomAnchorBlockEntity roomAnchor){
+                    roomAnchor.onUse(player,world,pos,state);
+                }
+                return ActionResult.SUCCESS;
             }
-            return ActionResult.SUCCESS;
         }
         return super.onUse(state, world, pos, player, hand, hit);
     }

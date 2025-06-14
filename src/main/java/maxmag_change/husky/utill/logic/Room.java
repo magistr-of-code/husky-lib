@@ -19,6 +19,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
+import javax.swing.event.HyperlinkEvent;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,15 +71,10 @@ public class Room implements Cloneable {
 
     public static void protectedGenerate(Room room, World world, BlockPos pos, BlockRotation rotation, int forward){
         Room room1 = room.clone();
-        room1.generate(world,pos,rotation,forward,1);
+        room1.generate(world,pos,rotation,forward);
     }
 
-    public static void protectedGenerate(Room room, World world, BlockPos pos, BlockRotation rotation, int forward,int smth){
-        Room room1 = room.clone();
-        room1.generate(world,pos,rotation,forward,smth);
-    }
-
-    public void generate(World world,BlockPos pos,BlockRotation rotation,int forward,int smth){
+    public void generate(World world,BlockPos pos,BlockRotation rotation,int forward){
         //Don't generate if forward is set to 0
         if (forward<=0){
             return;
@@ -89,8 +85,10 @@ public class Room implements Cloneable {
         }
 
         //Rotate room's bounding box
-        BlockPos min = StructureTemplate.transformAround(BlockPos.ofFloored(this.getRoomSize().minX,this.getRoomSize().minY,this.getRoomSize().minZ),BlockMirror.NONE,rotation,BlockPos.ORIGIN);
-        BlockPos max = StructureTemplate.transformAround(BlockPos.ofFloored(this.getRoomSize().maxX,this.getRoomSize().maxY,this.getRoomSize().maxZ),BlockMirror.NONE,rotation,BlockPos.ORIGIN);
+        BlockPos boxCenter = BlockPos.ofFloored(this.getRoomSize().getCenter());
+
+        BlockPos min = StructureTemplate.transformAround(BlockPos.ofFloored(this.getRoomSize().minX,this.getRoomSize().minY,this.getRoomSize().minZ),BlockMirror.NONE,rotation,boxCenter);
+        BlockPos max = StructureTemplate.transformAround(BlockPos.ofFloored(this.getRoomSize().maxX,this.getRoomSize().maxY,this.getRoomSize().maxZ),BlockMirror.NONE,rotation,boxCenter);
 
         this.setRoomSize(new Box(min,max));
 
@@ -104,12 +102,20 @@ public class Room implements Cloneable {
             StructureTemplateManager structureTemplateManager = world.getServer().getStructureTemplateManager();
             Optional<StructureTemplate> optional;
             optional = structureTemplateManager.getTemplate(this.getStructureName());
-            optional.get().place((ServerWorld)world,pos,pos,structurePlacementData,world.getRandom(),2);
+            optional.get().place(
+                    (ServerWorld)world,
+                    StructureTemplate.transformAround(pos, BlockMirror.NONE, rotation, pos.add(boxCenter)),
+                    pos.add(boxCenter),
+                    structurePlacementData,
+                    world.getRandom(),
+                    2
+            );
         }
 
         //Place room's corners
         //TODO stop placing wool
         world.setBlockState(min.add(pos), Blocks.GREEN_WOOL.getDefaultState());
+        world.setBlockState(pos.add(boxCenter), Blocks.PINK_WOOL.getDefaultState());
         world.setBlockState(max.add(pos), Blocks.RED_WOOL.getDefaultState());
 
         //Go through each door
@@ -123,7 +129,7 @@ public class Room implements Cloneable {
                 }
 
                 //Rotate the door
-                door.centerBlock = StructureTemplate.transformAround(door.getCenterBlock(), BlockMirror.NONE, rotation, BlockPos.ORIGIN);
+                door.centerBlock = StructureTemplate.transformAround(door.getCenterBlock(), BlockMirror.NONE, rotation, boxCenter);
                 door.direction = rotation.rotate(door.getDirection());
 
                 for(int i = 0; i < door.getBlocks().size(); ++i) {
@@ -141,20 +147,15 @@ public class Room implements Cloneable {
                 world.setBlockState(pos.add(door.getCenterBlock()), Blocks.YELLOW_WOOL.getDefaultState());
 
                 //Generate additional rooms
-                if (forward-1>0  && ii==smth) {
-                    //TODO make work
+                if (forward-1>0) {
                     List<MatchingRoom> matchingRooms = RoomRegistry.getWithMatchingDoor(door.clone()); //List.of(new Pair<>(BlockRotation.CLOCKWISE_90,new Room(new Identifier(HuskyLib.MOD_ID,"vanilla/crossroad1"))),new Pair<>(BlockRotation.CLOCKWISE_90,new Room(new Identifier(HuskyLib.MOD_ID,"vanilla/crossroad1"))));
 
                     if (!matchingRooms.isEmpty()){
-                        matchingRooms.forEach(matchingRoom->{
-                            //TODO stop logging
-                            HuskyLib.LOGGER.error(matchingRoom.getRoom().getStructureName().toString());
-                        });
-                        MatchingRoom randomRoomPair = matchingRooms.get(world.getRandom().nextBetween(0,matchingRooms.size()-1));
-                        BlockRotation randomRotation = randomRoomPair.getRotation();
-                        Room randomRoom = randomRoomPair.getRoom().clone();
-                        Door randomDoor = randomRoom.getDoors().get(randomRoomPair.getMatchingDoorIndex());
-                        BlockPos centerRandomDoor = StructureTemplate.transformAround(randomDoor.getCenterBlock(), BlockMirror.NONE, randomRotation, BlockPos.ORIGIN);
+                        MatchingRoom matchingRoom = matchingRooms.get(world.getRandom().nextBetween(0,matchingRooms.size()-1));
+                        BlockRotation randomRotation = matchingRoom.getRotation();
+                        Room randomRoom = matchingRoom.getRoom().clone();
+                        Door randomDoor = randomRoom.getDoors().get(matchingRoom.getMatchingDoorIndex());
+                        BlockPos centerRandomDoor = StructureTemplate.transformAround(randomDoor.getCenterBlock(), BlockMirror.NONE, randomRotation, BlockPos.ofFloored(randomRoom.getRoomSize().getCenter()));
 
                         BlockPos roomPoint = door.getCenterBlock().add(pos);
 
@@ -162,11 +163,10 @@ public class Room implements Cloneable {
 
                         roomPoint = roomPoint.add(pos);
 
-                        randomRoom.getDoors().set(randomRoomPair.getMatchingDoorIndex(),Door.EMPTY);
+                        randomRoom.getDoors().set(matchingRoom.getMatchingDoorIndex(),Door.EMPTY);
 
                         Room.protectedGenerate(randomRoom,world, roomPoint,randomRotation,forward-1);
                         //TODO stop logging
-                        HuskyLib.LOGGER.error(roomPoint.toString());
                     } else {
                         HuskyLib.LOGGER.error("no matching rooms found");
                     }

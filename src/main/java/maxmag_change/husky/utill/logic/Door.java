@@ -78,14 +78,23 @@ public class Door implements Cloneable{
             return false;
         }
 
-        //HuskyLib.LOGGER.error(rotation.rotate(door.getDirection()).toString());
-        //rotation.rotate(door.getDirection()) == this.getDirection().getOpposite();
-
-        boolean test1 = rotation.rotate(door.getDirection()) == this.getDirection().getOpposite();
+        boolean test1 = rotation.rotate(this.getDirection()) == door.getDirection().getOpposite();
         boolean test2 = hasAllElements(blocks,shape);
         boolean test3 = hasAllElements(shape,blocks);
 
-        return test1 && test2 && test3;
+        if (!test1){
+            return false;
+        }
+
+        if (!test2){
+            return false;
+        }
+
+        if (!test3){
+            return false;
+        }
+
+        return true;
 //        return true;
 
     }

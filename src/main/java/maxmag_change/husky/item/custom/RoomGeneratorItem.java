@@ -25,10 +25,20 @@ public class RoomGeneratorItem extends Item {
         World world = context.getWorld();
 
         if (!world.isClient()) {
-            Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"crossroad2"));
+            //Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"crossroad2"));
+            Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"corridor1"));
             if (room!=null) {
                 HuskyLib.LOGGER.error("generating...");
-                Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.NONE, 2,context.getStack().getOrCreateNbt().getInt("forward")/2-1);
+                int number = context.getStack().getOrCreateNbt().getInt("forward")/2-1;
+                if (number==1){
+                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.NONE, 2);
+                } else if (number==2){
+                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.CLOCKWISE_90, 2);
+                } else if (number==3){
+                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.COUNTERCLOCKWISE_90, 2);
+                } else {
+                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.CLOCKWISE_180, 2);
+                }
             }
         }
 
@@ -48,7 +58,8 @@ public class RoomGeneratorItem extends Item {
                 } else {
                     nbt.putInt("forward", count+1);
                 }
-                miner.sendMessage(Text.literal(String.valueOf(nbt.getInt("forward"))),true);
+                int number = nbt.getInt("forward")/2-1;
+                miner.sendMessage(Text.literal(String.valueOf(number)),true);
             }
         }
         return false;

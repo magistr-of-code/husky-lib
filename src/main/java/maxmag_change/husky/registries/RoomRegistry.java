@@ -62,7 +62,7 @@ public class RoomRegistry {
             var identifier = entry.getKey();
             var resource = entry.getValue();
             try {
-                HuskyLib.LOGGER.debug("Checking resource: " + identifier);
+                //HuskyLib.LOGGER.debug("Checking resource: " + identifier);
                 JsonReader reader = new JsonReader(new InputStreamReader(resource.getInputStream()));
                 Room container = decode(reader).toRoom();
                 var id = identifier
