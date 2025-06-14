@@ -2,6 +2,7 @@ package maxmag_change.husky;
 
 import maxmag_change.husky.block.HuskyBlocks;
 import maxmag_change.husky.block.entity.HuskyBlockEntities;
+import maxmag_change.husky.entity.HuskyEntities;
 import maxmag_change.husky.item.HuskyItems;
 import maxmag_change.husky.particles.HuskyParticleRegistry;
 import maxmag_change.husky.registries.HuskySounds;
@@ -24,6 +25,7 @@ public class HuskyLib implements ModInitializer {
 		HuskyParticleRegistry.PARTICLES.register();
 		HuskySounds.initialize();
 		HuskyBlocks.registerModBlocks();
+		HuskyEntities.registerModEntities();
 		HuskyItems.registerModItems();
 		HuskyBlockEntities.registerBlockEntities();
 

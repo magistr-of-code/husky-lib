@@ -53,15 +53,14 @@ public class Door implements Cloneable{
         } else if (this.hasMatchingShapeWithRotation(door,BlockRotation.CLOCKWISE_90)) {
             matches = true;
             rotation = BlockRotation.CLOCKWISE_90;
-        }
-//        } else if (this.hasMatchingShapeWithRotation(door,BlockRotation.CLOCKWISE_180)){
-//            matches=true;
-//            rotation=BlockRotation.CLOCKWISE_180;
+        } else if (this.hasMatchingShapeWithRotation(door,BlockRotation.CLOCKWISE_180)) {
+            matches = true;
+            rotation = BlockRotation.CLOCKWISE_180;
 
-//        else if (this.hasMatchingShapeWithRotation(door,BlockRotation.COUNTERCLOCKWISE_90)){
-//            matches=true;
-//            rotation=BlockRotation.COUNTERCLOCKWISE_90;
-//        }
+        } else if (this.hasMatchingShapeWithRotation(door,BlockRotation.COUNTERCLOCKWISE_90)){
+            matches=true;
+            rotation=BlockRotation.COUNTERCLOCKWISE_90;
+        }
 
 
         return new Pair<>(rotation,matches);

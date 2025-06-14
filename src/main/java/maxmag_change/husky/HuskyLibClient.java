@@ -5,12 +5,15 @@ import maxmag_change.husky.block.entity.custom.PlushBlockEntity;
 import maxmag_change.husky.block.entity.custom.RoomAnchorBlockEntity;
 import maxmag_change.husky.block.entity.renderer.PlushBlockEntityRenderer;
 import maxmag_change.husky.block.entity.renderer.RoomAnchorEntityRenderer;
+import maxmag_change.husky.entity.HuskyEntities;
+import maxmag_change.husky.entity.renderer.ChairEntityRenderer;
 import maxmag_change.husky.particles.HuskyParticleRegistry;
 import maxmag_change.husky.particles.RuneParticleType;
 import maxmag_change.husky.particles.SmokeParticleType;
 import maxmag_change.husky.particles.SweepParticleType;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import team.lodestar.lodestone.systems.particle.world.type.LodestoneWorldParticleType;
@@ -32,6 +35,8 @@ public class HuskyLibClient implements ClientModInitializer {
 
         BlockEntityRendererFactories.register(HuskyBlockEntities.ROOM_ANCHOR_BLOCK_ENTITY, RoomAnchorEntityRenderer::new);
         BlockEntityRendererFactories.register(HuskyBlockEntities.PLUSH_BLOCK_ENTITY, PlushBlockEntityRenderer::new);
+
+        EntityRendererRegistry.register(HuskyEntities.CHAIR, ChairEntityRenderer::new);
 
 
         ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((blockEntity, serverWorld) -> {

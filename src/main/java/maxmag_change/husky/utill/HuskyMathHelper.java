@@ -101,6 +101,20 @@ public class HuskyMathHelper {
         return new Vec3d(box.maxX,box.minY,box.maxZ);
     }
 
+    public static boolean inRange(Vec3d value,float min, float max){
+        return
+                value.getX() > min &&
+                        value.getX() < max &&
+                        value.getY() > min &&
+                        value.getY() < max &&
+                        value.getZ() > min &&
+                        value.getZ() < max;
+    }
+
+    public static boolean inRange(float value,float min, float max){
+        return value > min && value < max;
+    }
+
     public static double calculateLength(Box box){
         return new Vec3d(box.minX,box.minY,box.minZ).distanceTo(new Vec3d(box.maxX,box.maxY,box.maxZ));
     }

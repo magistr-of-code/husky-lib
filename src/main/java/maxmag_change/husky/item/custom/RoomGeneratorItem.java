@@ -26,18 +26,17 @@ public class RoomGeneratorItem extends Item {
 
         if (!world.isClient()) {
             //Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"crossroad2"));
-            Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"corridor1"));
+            Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"vanilla/corridor1"));
             if (room!=null) {
-                HuskyLib.LOGGER.error("generating...");
                 int number = context.getStack().getOrCreateNbt().getInt("forward")/2-1;
-                if (number==1){
-                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.NONE, 2);
+                if (number==0){
+                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.NONE, 3);
+                } else if (number==1){
+                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.CLOCKWISE_90, 3);
                 } else if (number==2){
-                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.CLOCKWISE_90, 2);
-                } else if (number==3){
-                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.COUNTERCLOCKWISE_90, 2);
+                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.COUNTERCLOCKWISE_90, 3);
                 } else {
-                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.CLOCKWISE_180, 2);
+                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.CLOCKWISE_180, 3);
                 }
             }
         }
