@@ -1,7 +1,5 @@
-package maxmag_change.husky.utill.logic;
+package maxmag_change.husky.utill.logic.door;
 
-import com.mojang.datafixers.kinds.IdF;
-import maxmag_change.husky.HuskyLib;
 import maxmag_change.husky.utill.Convertor;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -12,18 +10,14 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 
 import java.util.List;
 
 public class Door implements Cloneable{
-    DefaultedList<BlockPos> blocks = DefaultedList.of();
-    BlockPos centerBlock = BlockPos.ORIGIN;
-    Direction direction = Direction.EAST;
+    public DefaultedList<BlockPos> blocks = DefaultedList.of();
+    public BlockPos centerBlock = BlockPos.ORIGIN;
+    public Direction direction = Direction.EAST;
 
     public static final Door EMPTY = new Door();
 
@@ -96,6 +90,14 @@ public class Door implements Cloneable{
         return true;
 //        return true;
 
+    }
+
+    public void rotateBlocks(BlockRotation rotation){
+        for(int i = 0; i < this.getBlocks().size(); ++i) {
+            BlockPos block = this.getBlocks().get(i);
+
+            this.blocks.set(i,StructureTemplate.transformAround(block,BlockMirror.NONE,rotation,BlockPos.ORIGIN));
+        }
     }
 
     public static boolean hasAllElements(List<BlockPos> blocks2,List<BlockPos> shape2){

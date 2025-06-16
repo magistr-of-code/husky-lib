@@ -3,6 +3,10 @@
     "namespace": "husky",
     "path": "test/horizontal"
   },
+  "settings": {
+    "mergeDoors":true,
+    "group":"test"
+  },
   "roomSize": {
     "minX": 0,
     "minY": 0,

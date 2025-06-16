@@ -18,6 +18,23 @@ public class HuskyMathHelper {
         return min < value && value < max;
     }
 
+    public static boolean intersects(Box box1, Box box2) {
+        // Check X-axis overlap
+        if (box1.maxX < box2.minX || box1.minX > box2.maxX) {
+            return false;
+        }
+        // Check Y-axis overlap
+        if (box1.maxY < box2.minY || box1.minY > box2.maxY) {
+            return false;
+        }
+        // Check Z-axis overlap
+        if (box1.maxZ < box2.minZ || box1.minZ > box2.maxZ) {
+            return false;
+        }
+        // If all axes overlap, the boxes intersect
+        return true;
+    }
+
     public static Box rotateBox(Box box, BlockRotation rotation){
         BlockPos min = StructureTemplate.transformAround(BlockPos.ofFloored(box.minX,box.minY,box.minZ), BlockMirror.NONE,rotation,BlockPos.ORIGIN);
         BlockPos max = StructureTemplate.transformAround(BlockPos.ofFloored(box.maxX,box.maxY,box.maxZ),BlockMirror.NONE,rotation,BlockPos.ORIGIN);

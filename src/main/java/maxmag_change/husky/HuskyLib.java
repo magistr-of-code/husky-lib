@@ -5,6 +5,7 @@ import maxmag_change.husky.block.entity.HuskyBlockEntities;
 import maxmag_change.husky.entity.HuskyEntities;
 import maxmag_change.husky.item.HuskyItems;
 import maxmag_change.husky.particles.HuskyParticleRegistry;
+import maxmag_change.husky.registries.HuskyCommands;
 import maxmag_change.husky.registries.HuskySounds;
 import maxmag_change.husky.registries.RoomRegistry;
 import net.fabricmc.api.ModInitializer;
@@ -28,6 +29,7 @@ public class HuskyLib implements ModInitializer {
 		HuskyEntities.registerModEntities();
 		HuskyItems.registerModItems();
 		HuskyBlockEntities.registerBlockEntities();
+		HuskyCommands.registerModCommands();
 
 		ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer) -> {
 			RoomRegistry.loadRooms(minecraftServer.getResourceManager());

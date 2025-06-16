@@ -3,22 +3,15 @@ package maxmag_change.husky.registries;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import maxmag_change.husky.HuskyLib;
-import maxmag_change.husky.utill.logic.DeserializedRoom;
-import maxmag_change.husky.utill.logic.Door;
-import maxmag_change.husky.utill.logic.MatchingRoom;
-import maxmag_change.husky.utill.logic.Room;
+import maxmag_change.husky.utill.logic.door.Door;
+import maxmag_change.husky.utill.logic.room.DeserializedRoom;
+import maxmag_change.husky.utill.logic.room.MatchingRoom;
+import maxmag_change.husky.utill.logic.room.Room;
+import maxmag_change.husky.utill.logic.room.RoomSettings;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.shape.VoxelShape;
-import org.apache.logging.log4j.util.BiConsumer;
 
-import javax.swing.*;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -32,8 +25,8 @@ public class RoomRegistry {
         registrations.put(identifier, room);
     }
 
-    public static void register(Identifier identifier, Box roomSize, List<Door> doors) {
-        register(identifier,new Room(identifier,roomSize,doors));
+    public static void register(Identifier identifier, Box roomSize, List<Door> doors, RoomSettings settings) {
+        register(identifier,new Room(identifier,roomSize,doors,settings));
     }
 
     public static Room getType(Identifier identifier) {

@@ -3,11 +3,15 @@ package maxmag_change.husky.block.entity.custom;
 import com.google.gson.Gson;
 import maxmag_change.husky.block.entity.HuskyBlockEntities;
 import maxmag_change.husky.utill.Convertor;
-import maxmag_change.husky.utill.logic.Door;
-import maxmag_change.husky.utill.logic.Room;
+import maxmag_change.husky.utill.logic.door.DeserializedDoor;
+import maxmag_change.husky.utill.logic.door.Door;
+import maxmag_change.husky.utill.logic.room.DeserializedRoom;
+import maxmag_change.husky.utill.logic.room.Room;
+import maxmag_change.husky.utill.logic.room.RoomSettings;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.boss.dragon.phase.HoverPhase;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -17,7 +21,10 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +34,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class RoomAnchorBlockEntity extends BlockEntity {
-    private DefaultedList<Door> doors;
+    private final DefaultedList<Door> doors;
     private Box roomSize;
 
     public RoomAnchorBlockEntity(BlockPos pos, BlockState state) {
@@ -51,11 +58,10 @@ public class RoomAnchorBlockEntity extends BlockEntity {
             }
         }
 
-
-        user.sendMessage(Text.literal(encode(new Room(new Identifier("mod_id","room_path"),this.getRoomSize(),notEmptyDoors))));
+        user.sendMessage(Text.literal("[Room Anchor] Generated json contents (Click to copy)").styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD,encode(new DeserializedRoom(new Identifier("mod_id","room_path"),this.getRoomSize(),notEmptyDoors,new RoomSettings(false,"group"))))).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,Text.of("Click to copy")))));
     }
 
-    public static String encode(Room container) {
+    public static String encode(DeserializedRoom container) {
         var gson = new Gson();
         return gson.toJson(container);
     }
@@ -66,10 +72,6 @@ public class RoomAnchorBlockEntity extends BlockEntity {
 
     public DefaultedList<Door> getDoors() {
         return doors;
-    }
-
-    public int size() {
-        return 27;
     }
 
     @Override

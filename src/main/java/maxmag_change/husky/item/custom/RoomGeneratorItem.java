@@ -2,7 +2,7 @@ package maxmag_change.husky.item.custom;
 
 import maxmag_change.husky.HuskyLib;
 import maxmag_change.husky.registries.RoomRegistry;
-import maxmag_change.husky.utill.logic.Room;
+import maxmag_change.husky.utill.logic.room.Room;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -28,15 +28,16 @@ public class RoomGeneratorItem extends Item {
             //Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"crossroad2"));
             Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"vanilla/corridor1"));
             if (room!=null) {
-                int number = context.getStack().getOrCreateNbt().getInt("forward")/2-1;
-                if (number==0){
-                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.NONE, 3);
-                } else if (number==1){
-                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.CLOCKWISE_90, 3);
-                } else if (number==2){
-                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.COUNTERCLOCKWISE_90, 3);
+                int forward = context.getStack().getOrCreateNbt().getInt("forward")/2-1;
+                int rotation = context.getStack().getOrCreateNbt().getInt("rotation")/2-1;
+                if (rotation==0){
+                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.NONE, forward);
+                } else if (rotation==1){
+                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.CLOCKWISE_90, forward);
+                } else if (rotation==2){
+                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.COUNTERCLOCKWISE_90, forward);
                 } else {
-                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.CLOCKWISE_180, 3);
+                    Room.protectedGenerate(room,world, context.getBlockPos(), BlockRotation.CLOCKWISE_180, forward);
                 }
             }
         }
@@ -51,14 +52,25 @@ public class RoomGeneratorItem extends Item {
             NbtCompound nbt = miner.getMainHandStack().getOrCreateNbt();
 
             if (nbt != null) {
-                int count = nbt.getInt("forward");
-                if (count>=8){
-                    nbt.putInt("forward", 1);
+                if (miner.isSneaking()){
+                    int count = nbt.getInt("forward");
+                    if (count>=200){
+                        nbt.putInt("forward", 1);
+                    } else {
+                        nbt.putInt("forward", count+1);
+                    }
+                    int forward = nbt.getInt("forward")/2-1;
+                    miner.sendMessage(Text.literal("forward:" + forward),true);
                 } else {
-                    nbt.putInt("forward", count+1);
+                    int count = nbt.getInt("rotation");
+                    if (count>=8){
+                        nbt.putInt("rotation", 1);
+                    } else {
+                        nbt.putInt("rotation", count+1);
+                    }
+                    int rotation = nbt.getInt("rotation")/2-1;
+                    miner.sendMessage(Text.literal("rotation:" + rotation),true);
                 }
-                int number = nbt.getInt("forward")/2-1;
-                miner.sendMessage(Text.literal(String.valueOf(number)),true);
             }
         }
         return false;

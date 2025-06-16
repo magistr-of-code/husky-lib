@@ -1,22 +1,17 @@
 package maxmag_change.husky.block.entity.renderer;
 
-import maxmag_change.husky.HuskyLib;
 import maxmag_change.husky.block.entity.custom.RoomAnchorBlockEntity;
-import maxmag_change.husky.utill.logic.Door;
-import net.minecraft.block.enums.StructureBlockMode;
+import maxmag_change.husky.utill.logic.door.Door;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.block.entity.StructureBlockBlockEntityRenderer;
-import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 
 public class RoomAnchorEntityRenderer implements BlockEntityRenderer<RoomAnchorBlockEntity> {
     public RoomAnchorEntityRenderer(BlockEntityRendererFactory.Context context) {

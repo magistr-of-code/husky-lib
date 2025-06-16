@@ -1,20 +1,20 @@
 {
   "structureName": {
     "namespace": "husky",
-    "path": "vanilla/crossroad1"
+    "path": "vanilla/magma_parkour1"
   },
   "settings": {
-    "mergeDoors":false,
-    "group":"vanilla",
-    "weight": 1.0
+    "mergeDoors": false,
+    "group": "vanilla",
+    "weight": 0.2
   },
   "roomSize": {
     "minX": 0,
     "minY": 0,
     "minZ": 0,
-    "maxX": 6,
-    "maxY": 9,
-    "maxZ": 6
+    "maxX": 20,
+    "maxY": 20,
+    "maxZ": 30
   },
   "doors": [
     {
@@ -51,8 +51,8 @@
         }
       ],
       "centerBlock": {
-        "x": 3,
-        "y": 4,
+        "x": 13,
+        "y": 8,
         "z": 0
       },
       "direction": "NORTH"
@@ -60,14 +60,14 @@
     {
       "blocks": [
         {
-          "x": 0,
+          "x": -1,
           "y": -1,
-          "z": -1
+          "z": 0
         },
         {
-          "x": 0,
+          "x": -1,
           "y": 0,
-          "z": -1
+          "z": 0
         },
         {
           "x": 0,
@@ -80,22 +80,22 @@
           "z": 0
         },
         {
-          "x": 0,
+          "x": 1,
           "y": -1,
-          "z": 1
+          "z": 0
         },
         {
-          "x": 0,
+          "x": 1,
           "y": 0,
-          "z": 1
+          "z": 0
         }
       ],
       "centerBlock": {
-        "x": 6,
-        "y": 4,
-        "z": 3
+        "x": 4,
+        "y": 8,
+        "z": 0
       },
-      "direction": "EAST"
+      "direction": "NORTH"
     },
     {
       "blocks": [
@@ -131,9 +131,9 @@
         }
       ],
       "centerBlock": {
-        "x": 3,
-        "y": 4,
-        "z": 6
+        "x": 10,
+        "y": 17,
+        "z": 30
       },
       "direction": "SOUTH"
     },
@@ -141,41 +141,16 @@
       "blocks": [
         {
           "x": 0,
-          "y": -1,
-          "z": 1
-        },
-        {
-          "x": 0,
-          "y": 0,
-          "z": 1
-        },
-        {
-          "x": 0,
           "y": 0,
           "z": 0
-        },
-        {
-          "x": 0,
-          "y": -1,
-          "z": 0
-        },
-        {
-          "x": 0,
-          "y": -1,
-          "z": -1
-        },
-        {
-          "x": 0,
-          "y": 0,
-          "z": -1
         }
       ],
       "centerBlock": {
-        "x": 0,
-        "y": 4,
-        "z": 3
+        "x": 10,
+        "y": 0,
+        "z": 5
       },
-      "direction": "WEST"
+      "direction": "DOWN"
     }
   ]
 }

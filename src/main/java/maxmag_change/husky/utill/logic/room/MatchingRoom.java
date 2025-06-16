@@ -1,5 +1,6 @@
-package maxmag_change.husky.utill.logic;
+package maxmag_change.husky.utill.logic.room;
 
+import maxmag_change.husky.utill.logic.door.Door;
 import net.minecraft.util.BlockRotation;
 
 public class MatchingRoom {

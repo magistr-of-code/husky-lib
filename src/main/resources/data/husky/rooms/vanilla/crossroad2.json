@@ -3,6 +3,11 @@
     "namespace": "husky",
     "path": "vanilla/crossroad2"
   },
+  "settings": {
+    "mergeDoors": false,
+    "group": "vanilla",
+    "weight": 1
+  },
   "roomSize": {
     "minX": 0,
     "minY": 0,
@@ -171,6 +176,21 @@
         "z": 3
       },
       "direction": "WEST"
+    },
+    {
+      "blocks": [
+        {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      ],
+      "centerBlock": {
+        "x": 3,
+        "y": 0,
+        "z": 3
+      },
+      "direction": "DOWN"
     }
   ]
 }
