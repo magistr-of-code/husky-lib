@@ -11,9 +11,16 @@ import maxmag_change.husky.registries.RoomRegistry;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
 
 public class HuskyLib implements ModInitializer {
 	public static final String MOD_ID = "husky";
@@ -31,9 +38,27 @@ public class HuskyLib implements ModInitializer {
 		HuskyBlockEntities.registerBlockEntities();
 		HuskyCommands.registerModCommands();
 
-		ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer) -> {
+		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
+			@Override
+			public Identifier getFabricId() {
+				return new Identifier(MOD_ID, "rooms");
+			}
+
+			@Override
+			public void reload(ResourceManager manager) {
+				// Clear Caches Here
+
+				RoomRegistry.loadRooms(manager);
+			}
+		});
+
+		ServerLifecycleEvents.SERVER_STARTED.register((minecraftServer) -> {
 			RoomRegistry.loadRooms(minecraftServer.getResourceManager());
 		});
+
+//		ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer) -> {
+//			RoomRegistry.loadRooms(minecraftServer.getResourceManager());
+//		});
 
 		LOGGER.info("Hello Fabric world!");
 	}

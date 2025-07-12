@@ -3,6 +3,7 @@ package maxmag_change.husky.registries;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import maxmag_change.husky.HuskyLib;
 import maxmag_change.husky.utill.logic.door.Door;
 import maxmag_change.husky.utill.logic.room.DeserializedRoom;
 import maxmag_change.husky.utill.logic.room.MatchingRoom;
@@ -11,9 +12,11 @@ import maxmag_change.husky.utill.logic.room.RoomSettings;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
+import org.lwjgl.system.Platform;
 
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +58,7 @@ public class RoomRegistry {
             var identifier = entry.getKey();
             var resource = entry.getValue();
             try {
-                //HuskyLib.LOGGER.debug("Checking resource: " + identifier);
+                HuskyLib.LOGGER.debug("Checking resource: " + identifier);
                 JsonReader reader = new JsonReader(new InputStreamReader(resource.getInputStream()));
                 Room container = decode(reader).toRoom();
                 var id = identifier
