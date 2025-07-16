@@ -3,13 +3,14 @@
 	"id": "husky",
 	"version": "${version}",
 	"name": "Husky Lib",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "This is a library mod that consists of particles, dungeon generation and more!",
 	"authors": [
-		"Me!"
+		"maxmag_change"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://modrinth.com/mod/husky-lib",
+		"sources": "nope",
+		"discord": "https://discord.gg/FHsjrwKRuj"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/husky/icon.png",
@@ -32,9 +33,9 @@
 		"fabricloader": ">=0.16.14",
 		"minecraft": "~1.20.1",
 		"java": ">=17",
-		"fabric-api": "*"
+		"fabric-api": ">=0.92.2"
 	},
 	"suggests": {
-		"another-mod": "*"
+		"another-mod": "Enchanted Warfare"
 	}
 }

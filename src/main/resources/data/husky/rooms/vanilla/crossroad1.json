@@ -6,6 +6,10 @@
   "settings": {
     "mergeDoors":false,
     "group":"vanilla",
+    "deadEnd": {
+      "namespace": "husky",
+      "path": "vanilla/dungeon"
+    },
     "weight": 1.0
   },
   "roomSize": {

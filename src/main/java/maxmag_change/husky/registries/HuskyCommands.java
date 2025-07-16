@@ -17,6 +17,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 
 import java.util.List;
 import java.util.Objects;
@@ -26,18 +27,22 @@ public class HuskyCommands {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             //Generate rooms
             dispatcher.register(CommandManager.literal("rooms")
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
                     .then(CommandManager.literal("generate")
                             .then(CommandManager.argument("name", IdentifierArgumentType.identifier()).then(CommandManager.argument("forward", IntegerArgumentType.integer()).executes(HuskyCommands::generate)))));
             //Get group of room
             dispatcher.register(CommandManager.literal("rooms")
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
                     .then(CommandManager.literal("get")
                             .then(CommandManager.literal("group").then(CommandManager.argument("name", IdentifierArgumentType.identifier()).executes(HuskyCommands::getGroup)))));
             //Get json from room
             dispatcher.register(CommandManager.literal("rooms")
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
                     .then(CommandManager.literal("get")
                             .then(CommandManager.literal("json").then(CommandManager.argument("name", IdentifierArgumentType.identifier()).executes(HuskyCommands::getJson)))));
             //Get room from group
             dispatcher.register(CommandManager.literal("rooms")
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
                     .then(CommandManager.literal("get")
                             .then(CommandManager.literal("from").then(CommandManager.literal("group").then(CommandManager.argument("name", StringArgumentType.string()).executes(HuskyCommands::getByGroup))))));
         });
@@ -109,8 +114,14 @@ public class HuskyCommands {
 
         Room room = RoomRegistry.getType(name);
         if (room!=null) {
-            Room.protectedGenerate(room,context.getSource().getWorld(), BlockPos.ofFloored(context.getSource().getPosition()), BlockRotation.NONE, forward);
-            context.getSource().sendFeedback(()-> Text.literal("Generated Room"),false);
+            DefaultedList<Box> list = DefaultedList.of();
+            Room.protectedGenerate(room,context.getSource().getWorld(),list, BlockPos.ofFloored(context.getSource().getPosition()), BlockRotation.NONE, forward);
+
+            if (forward==1){
+                context.getSource().sendFeedback(()-> Text.literal("Generated Room"),true);
+            } else {
+                context.getSource().sendFeedback(()-> Text.literal("Generated " + list.size() + " Rooms"),true);
+            }
             return 1;
         } else {
             context.getSource().sendError(Text.literal("Couldn't find room ").append(Text.literal(name.toString()).styled(style -> style.withUnderline(true).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD,name.toString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,Text.of("Click to copy"))))));

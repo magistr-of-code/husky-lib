@@ -1,8 +1,10 @@
 package maxmag_change.husky.utill.logic.room;
 
 import maxmag_change.husky.HuskyLib;
+import maxmag_change.husky.registries.DeadEndRegistry;
 import maxmag_change.husky.registries.RoomRegistry;
 import maxmag_change.husky.utill.HuskyMathHelper;
+import maxmag_change.husky.utill.logic.dead_end.DeadEnd;
 import maxmag_change.husky.utill.logic.door.Door;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePlacementData;
@@ -145,6 +147,9 @@ public class Room implements Cloneable {
                 //Generate additional rooms
                 if (forward-1>0) {
                     this.generateBranches(world, generatedRooms, pos, door,forward);
+                } else {
+                    DeadEnd deadEnd = DeadEndRegistry.getType(this.getSettings().getDeadEnd());
+                    deadEnd.generate(world,door,pos);
                 }
 
                 this.getDoors().set(ii,door);
@@ -208,7 +213,8 @@ public class Room implements Cloneable {
 
             Room.protectedGenerate(randomRoom, world, generatedRooms,roomPoint,randomRotation, forward-1);
         } else {
-            //HuskyLib.LOGGER.error("no matching rooms found");
+            DeadEnd deadEnd = DeadEndRegistry.getType(this.getSettings().getDeadEnd());
+            deadEnd.generate(world,door,pos);
         }
     }
 
