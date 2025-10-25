@@ -148,7 +148,7 @@ public class Room implements Cloneable {
                 if (forward-1>0) {
                     this.generateBranches(world, generatedRooms, pos, door,forward);
                 } else {
-                    DeadEnd deadEnd = DeadEndRegistry.getType(this.getSettings().getDeadEnd());
+                    DeadEnd deadEnd = DeadEndRegistry.getType(this.getSettings().getDeadEnd().toIdentifier());
                     deadEnd.generate(world,door,pos);
                 }
 
@@ -213,7 +213,7 @@ public class Room implements Cloneable {
 
             Room.protectedGenerate(randomRoom, world, generatedRooms,roomPoint,randomRotation, forward-1);
         } else {
-            DeadEnd deadEnd = DeadEndRegistry.getType(this.getSettings().getDeadEnd());
+            DeadEnd deadEnd = DeadEndRegistry.getType(this.getSettings().getDeadEnd().toIdentifier());
             deadEnd.generate(world,door,pos);
         }
     }
@@ -285,5 +285,15 @@ public class Room implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "structureName=" + structureName.toString() +
+                ", settings=" + settings +
+                ", roomSize=" + roomSize.toString() +
+                ", doors=" + doors.toString() +
+                '}';
     }
 }

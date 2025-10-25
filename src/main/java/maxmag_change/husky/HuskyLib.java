@@ -13,10 +13,12 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.resource.LifecycledResourceManager;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,10 +57,6 @@ public class HuskyLib implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTED.register((minecraftServer) -> {
 			RoomRegistry.loadRooms(minecraftServer.getResourceManager());
 		});
-
-//		ServerLifecycleEvents.SERVER_STARTING.register((minecraftServer) -> {
-//			RoomRegistry.loadRooms(minecraftServer.getResourceManager());
-//		});
 
 		LOGGER.info("Hello Fabric world!");
 	}

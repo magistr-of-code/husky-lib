@@ -52,7 +52,7 @@ public class RoomRegistry {
 
     public static void loadRooms(ResourceManager resourceManager) {
         var gson = new Gson();
-        Map<Identifier, Room> containers = new HashMap();
+        Map<Identifier, Room> containers = new HashMap<>();
         // Reading all attribute files
         for (var entry : resourceManager.findResources("rooms", fileName -> fileName.getPath().endsWith(".json")).entrySet()) {
             var identifier = entry.getKey();
@@ -66,7 +66,7 @@ public class RoomRegistry {
                 id = id.substring(0, id.lastIndexOf('.'));
                 containers.put(new Identifier(id), container);
             } catch (Exception e) {
-                System.err.println("Failed to parse: " + identifier);
+                HuskyLib.LOGGER.error("Failed to parse: " + identifier);
                 e.printStackTrace();
             }
         }
@@ -77,7 +77,6 @@ public class RoomRegistry {
 
     public static DeserializedRoom decode(JsonReader json) {
         var gson = new Gson();
-        DeserializedRoom container = gson.fromJson(json, attributesContainerFileFormat);
-        return container;
+        return gson.fromJson(json, attributesContainerFileFormat);
     }
 }

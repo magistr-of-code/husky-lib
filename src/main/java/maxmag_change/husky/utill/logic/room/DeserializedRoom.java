@@ -10,12 +10,12 @@ import java.util.List;
 
 public class DeserializedRoom {
 
-    Identifier structureName;
+    CustomIdentifier structureName;
     RoomSettings settings;
-    Box roomSize = new Box(0,0,0,0,0,0);
+    RoomBox roomSize = new RoomBox(0,0,0,0,0,0);
     List<DeserializedDoor> doors = DefaultedList.of();
 
-    public DeserializedRoom(Identifier structureName, Box roomSize, List<Door> doors, RoomSettings settings){
+    public DeserializedRoom(CustomIdentifier structureName, RoomBox roomSize, List<Door> doors, RoomSettings settings){
         this.structureName = structureName;
         this.roomSize = roomSize;
         for(int i = 0; i < doors.size(); ++i) {
@@ -35,6 +35,6 @@ public class DeserializedRoom {
             DDoor.add(i,doors.get(i).toDoor());
         }
 
-        return new Room(this.structureName,this.roomSize,DDoor,this.settings);
+        return new Room(this.structureName.toIdentifier(),this.roomSize.toBox(),DDoor,this.settings);
     }
 }

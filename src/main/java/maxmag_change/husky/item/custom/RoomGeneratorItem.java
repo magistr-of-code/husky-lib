@@ -28,6 +28,8 @@ public class RoomGeneratorItem extends Item {
             //Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"crossroad2"));
             Room room = RoomRegistry.getType(new Identifier(HuskyLib.MOD_ID,"vanilla/corridor1"));
             if (room!=null) {
+                HuskyLib.LOGGER.error(room.toString());
+
                 int forward = context.getStack().getOrCreateNbt().getInt("forward")/2-1;
                 int rotation = context.getStack().getOrCreateNbt().getInt("rotation")/2-1;
                 if (rotation==0){

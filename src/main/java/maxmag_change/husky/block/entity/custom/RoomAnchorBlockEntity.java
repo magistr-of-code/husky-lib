@@ -5,9 +5,7 @@ import maxmag_change.husky.block.entity.HuskyBlockEntities;
 import maxmag_change.husky.utill.Convertor;
 import maxmag_change.husky.utill.logic.door.DeserializedDoor;
 import maxmag_change.husky.utill.logic.door.Door;
-import maxmag_change.husky.utill.logic.room.DeserializedRoom;
-import maxmag_change.husky.utill.logic.room.Room;
-import maxmag_change.husky.utill.logic.room.RoomSettings;
+import maxmag_change.husky.utill.logic.room.*;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -58,7 +56,7 @@ public class RoomAnchorBlockEntity extends BlockEntity {
             }
         }
 
-        user.sendMessage(Text.literal("[Room Anchor] Generated json contents (Click to copy)").styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD,encode(new DeserializedRoom(new Identifier("mod_id","room_path"),this.getRoomSize(),notEmptyDoors,new RoomSettings(false,"group"))))).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,Text.of("Click to copy")))));
+        user.sendMessage(Text.literal("[Room Anchor] Generated json contents (Click to copy)").styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD,encode(new DeserializedRoom(new CustomIdentifier("mod_id","room_path"), new RoomBox(this.getRoomSize()),notEmptyDoors,new RoomSettings(false,"group"))))).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,Text.of("Click to copy")))));
     }
 
     public static String encode(DeserializedRoom container) {

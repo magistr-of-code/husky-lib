@@ -83,24 +83,6 @@ public class AbstractChair extends HorizontalFacingBlock {
         double px = pos.getX() + 0.5;
         double pz = pos.getZ() + 0.5;
         Direction direction = state.get(FACING);
-//        switch (direction) {
-//            case EAST -> {
-//                px = pos.getX() + 0.1;
-//                pz = pos.getZ() + 0.5;
-//            }
-//            case WEST -> {
-//                px = pos.getX() + 0.9;
-//                pz = pos.getZ() + 0.5;
-//            }
-//            case SOUTH -> {
-//                px = pos.getX() + 0.5;
-//                pz = pos.getZ() + 0.1;
-//            }
-//            default -> {
-//                px = pos.getX() + 0.5;
-//                pz = pos.getZ() + 0.9;
-//            }
-//        }
         double py = pos.getY() + this.height;
         float yaw = state.get(FACING).getOpposite().asRotation();
         ChairEntity chairEntity = HuskyEntities.CHAIR.create(world);

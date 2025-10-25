@@ -5,9 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import maxmag_change.husky.utill.logic.door.Door;
-import maxmag_change.husky.utill.logic.room.DeserializedRoom;
-import maxmag_change.husky.utill.logic.room.Room;
-import maxmag_change.husky.utill.logic.room.RoomSettings;
+import maxmag_change.husky.utill.logic.room.*;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -25,6 +23,12 @@ import java.util.Objects;
 public class HuskyCommands {
     public static void registerModCommands() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            //Reload Rooms
+            dispatcher.register(CommandManager.literal("rooms")
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
+                    .then(CommandManager.literal("reload")
+                            .executes(commandContext -> {RoomRegistry.loadRooms(commandContext.getSource().getServer().getResourceManager()); return 1;})));
+
             //Generate rooms
             dispatcher.register(CommandManager.literal("rooms")
                     .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
@@ -74,7 +78,7 @@ public class HuskyCommands {
                 }
             }
 
-            DeserializedRoom deserializedRoom = new DeserializedRoom(room.getStructureName(),room.getRoomSize(),notEmptyDoors,room.getSettings());
+            DeserializedRoom deserializedRoom = new DeserializedRoom(new CustomIdentifier(room.getStructureName().getNamespace(),room.getStructureName().getPath()), new RoomBox(room.getRoomSize()),notEmptyDoors,room.getSettings());
 
             context.getSource().sendFeedback(()->Text.literal("Generated json contents (Click to copy)").styled(style -> style.withUnderline(true).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD,new Gson().toJson(deserializedRoom))).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,Text.of("Click to copy")))),false);
             return 1;
@@ -85,19 +89,19 @@ public class HuskyCommands {
     }
 
     private static int getByGroup(CommandContext<ServerCommandSource> context) {
-        List<Room> rooms = DefaultedList.of();
+        List<Identifier> rooms = DefaultedList.of();
         String group = StringArgumentType.getString(context, "name");
         RoomRegistry.registrations.forEach(((identifier, room) -> {
             if (Objects.equals(room.getSettings().getGroup(), group)){
-                rooms.add(room);
+                rooms.add(identifier);
             }
         }));
 
         if (!rooms.isEmpty()){
             final MutableText[] text = {Text.literal("Found rooms ")};
             for (int i = 0; i < rooms.size(); i++) {
-                Room room = rooms.get(i);
-                text[0] = text[0].append(" " + (i + 1) +":").append(Text.literal(room.getStructureName().toString()).styled(style -> style.withUnderline(true).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD,room.getStructureName().toString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,Text.of("Click to copy")))));
+                Identifier room = rooms.get(i);
+                text[0] = text[0].append(" " + (i + 1) +":").append(Text.literal(room.toString()).styled(style -> style.withUnderline(true).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD,room.toString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,Text.of("Click to copy")))));
             }
             context.getSource().sendFeedback(()->text[0],false);
             return 1;
