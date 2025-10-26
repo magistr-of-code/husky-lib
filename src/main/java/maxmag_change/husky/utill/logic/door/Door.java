@@ -128,16 +128,20 @@ public class Door implements Cloneable{
         this.blocks = blocks;
     }
 
-    public void readNbt(NbtCompound nbtCompound){
-        this.direction = Direction.byName(nbtCompound.getString("Direction"));
-        this.centerBlock = Convertor.StringToBlock(nbtCompound.getString("CenterBlock"));
+    public static Door readNbt(NbtCompound nbtCompound){
+        Door door = new Door();
+
+        door.direction = Direction.byName(nbtCompound.getString("Direction"));
+        door.centerBlock = Convertor.StringToBlock(nbtCompound.getString("CenterBlock"));
 
         //blocks
         NbtList blocks = nbtCompound.getList("Blocks",NbtElement.COMPOUND_TYPE);
         for(int ii = 0; ii < blocks.size(); ++ii) {
             NbtCompound block = blocks.getCompound(ii);
-            this.blocks.add(ii,Convertor.StringToBlock(block.getString("BlockPos")));
+            door.blocks.add(ii,Convertor.StringToBlock(block.getString("BlockPos")));
         }
+
+        return door;
     }
 
     public void writeNbt(NbtCompound nbt) {

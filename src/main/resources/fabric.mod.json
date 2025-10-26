@@ -24,11 +24,19 @@
 		],
 		"client": [
 			"maxmag_change.husky.HuskyLibClient"
+		],
+		"cardinal-components": [
+			"maxmag_change.husky.cca.HuskyWorldComponents"
 		]
 	},
 	"mixins": [
 		"husky.mixins.json"
 	],
+	"custom": {
+		"cardinal-components": [
+			"husky:dungeons"
+		]
+	},
 	"depends": {
 		"fabricloader": ">=0.16.14",
 		"minecraft": "~1.20.1",

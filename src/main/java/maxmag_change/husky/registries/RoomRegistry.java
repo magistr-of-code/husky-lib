@@ -16,10 +16,7 @@ import org.lwjgl.system.Platform;
 
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RoomRegistry {
     static Map<Identifier, Room> registrations = new HashMap<>();
@@ -45,6 +42,18 @@ public class RoomRegistry {
 
         return rooms;
     }
+    public static List<Room> getWithMatchingGroup(String group){
+        List<Room> rooms = new java.util.ArrayList<>(List.of());
+        Map<Identifier, Room> roomMap = registrations;
+        roomMap.forEach(((identifier, room) -> {
+            if (Objects.equals(room.getSettings().getGroup(), group)){
+                rooms.add(room);
+            };
+        }));
+
+        return rooms;
+    }
+
 
 //    static {
 //        register(new Identifier(HuskyLib.MOD_ID,"vanilla/corridor1"),new Room(new Identifier(HuskyLib.MOD_ID,"vanilla/corridor1")));

@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import maxmag_change.husky.utill.logic.door.Door;
+import maxmag_change.husky.utill.logic.dungeon.BBH;
+import maxmag_change.husky.utill.logic.dungeon.Dungeon;
 import maxmag_change.husky.utill.logic.room.*;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -49,6 +51,14 @@ public class HuskyCommands {
                     .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
                     .then(CommandManager.literal("get")
                             .then(CommandManager.literal("from").then(CommandManager.literal("group").then(CommandManager.argument("name", StringArgumentType.string()).executes(HuskyCommands::getByGroup))))));
+            //Dungeon creation
+            dispatcher.register(CommandManager.literal("dungeon")
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
+                    .then(CommandManager.literal("create")
+                            .then(CommandManager.argument("startingRoom", IdentifierArgumentType.identifier())
+                                    .then(CommandManager.argument("group", StringArgumentType.string())
+                                            .then(CommandManager.argument("maxRooms", IntegerArgumentType.integer())
+                                                    .executes(HuskyCommands::createDungeon))))));
         });
     }
 
@@ -118,17 +128,35 @@ public class HuskyCommands {
 
         Room room = RoomRegistry.getType(name);
         if (room!=null) {
-            DefaultedList<Box> list = DefaultedList.of();
-            Room.protectedGenerate(room,context.getSource().getWorld(),list, BlockPos.ofFloored(context.getSource().getPosition()), BlockRotation.NONE, forward);
+            BBH bbh = new BBH(DefaultedList.of());
+            Room.protectedGenerate(room,context.getSource().getWorld(),bbh, BlockPos.ofFloored(context.getSource().getPosition()), BlockRotation.NONE, forward);
 
             if (forward==1){
                 context.getSource().sendFeedback(()-> Text.literal("Generated Room"),true);
             } else {
-                context.getSource().sendFeedback(()-> Text.literal("Generated " + list.size() + " Rooms"),true);
+                context.getSource().sendFeedback(()-> Text.literal("Generated " + bbh.boxes.size() + " Rooms"),true);
             }
             return 1;
         } else {
             context.getSource().sendError(Text.literal("Couldn't find room ").append(Text.literal(name.toString()).styled(style -> style.withUnderline(true).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD,name.toString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,Text.of("Click to copy"))))));
+            return 0;
+        }
+    }
+
+    private static int createDungeon(CommandContext<ServerCommandSource> context) {
+        Identifier startingRoom = IdentifierArgumentType.getIdentifier(context,"startingRoom");
+        String group = StringArgumentType.getString(context,"group");
+
+        int maxRooms = IntegerArgumentType.getInteger(context, "maxRooms");
+
+        Room room = RoomRegistry.getType(startingRoom);
+        if (room!=null) {
+            Dungeon dungeon = new Dungeon(new CustomIdentifier(startingRoom.getNamespace(),startingRoom.getPath()),group,maxRooms);
+
+            dungeon.createDungeon(context.getSource().getWorld(),BlockPos.ofFloored(context.getSource().getPosition()));
+            return 1;
+        } else {
+            context.getSource().sendError(Text.literal("Couldn't find room ").append(Text.literal(startingRoom.toString()).styled(style -> style.withUnderline(true).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD,startingRoom.toString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,Text.of("Click to copy"))))));
             return 0;
         }
     }

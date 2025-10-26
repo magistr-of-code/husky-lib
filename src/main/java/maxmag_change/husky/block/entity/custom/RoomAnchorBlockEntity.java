@@ -84,8 +84,7 @@ public class RoomAnchorBlockEntity extends BlockEntity {
                 NbtCompound nbtCompound = nbtList.getCompound(i);
                 int j = nbtCompound.getByte("Door") & 255;
                 if (j >= 0 && j < this.doors.size()) {
-                    Door door = new Door();
-                    door.readNbt(nbtCompound);
+                    Door door = Door.readNbt(nbtCompound);
                     this.doors.set(j, door);
                 }
             }

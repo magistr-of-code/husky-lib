@@ -2,6 +2,7 @@ package maxmag_change.husky;
 
 import maxmag_change.husky.block.HuskyBlocks;
 import maxmag_change.husky.block.entity.HuskyBlockEntities;
+import maxmag_change.husky.cca.HuskyWorldComponents;
 import maxmag_change.husky.entity.HuskyEntities;
 import maxmag_change.husky.item.HuskyItems;
 import maxmag_change.husky.particles.HuskyParticleRegistry;
@@ -39,6 +40,7 @@ public class HuskyLib implements ModInitializer {
 		HuskyItems.registerModItems();
 		HuskyBlockEntities.registerBlockEntities();
 		HuskyCommands.registerModCommands();
+		HuskyWorldComponents.initialize();
 
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Override

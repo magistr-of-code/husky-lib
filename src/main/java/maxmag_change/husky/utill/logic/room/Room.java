@@ -6,6 +6,10 @@ import maxmag_change.husky.registries.RoomRegistry;
 import maxmag_change.husky.utill.HuskyMathHelper;
 import maxmag_change.husky.utill.logic.dead_end.DeadEnd;
 import maxmag_change.husky.utill.logic.door.Door;
+import maxmag_change.husky.utill.logic.dungeon.BBH;
+import maxmag_change.husky.utill.logic.dungeon.Dungeon;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
@@ -86,14 +90,18 @@ public class Room implements Cloneable {
     }
 
     public static Room protectedGenerate(Room room, World world, BlockPos pos, BlockRotation rotation, int forward){
-        return protectedGenerate(room,world,DefaultedList.of(),pos,rotation,forward);
+        return protectedGenerate(room,world,null,new BBH(DefaultedList.of()),pos,rotation,forward);
     }
 
-    public static Room protectedGenerate(Room room, World world, List<Box> generatedRooms, BlockPos pos, BlockRotation rotation, int forward){
-        return room.clone().generate(world,generatedRooms,pos,rotation,forward);
+    public static Room protectedGenerate(Room room, World world, BBH bbh, BlockPos pos, BlockRotation rotation, int forward){
+        return protectedGenerate(room,world,null,bbh,pos,rotation,forward);
     }
 
-    public Room generate(World world,List<Box> generatedRooms,BlockPos pos,BlockRotation rotation,int forward){
+    public static Room protectedGenerate(Room room, World world, Dungeon dungeon, BBH bbh, BlockPos pos, BlockRotation rotation, int forward){
+        return room.clone().generate(world,dungeon,bbh,pos,rotation,forward);
+    }
+
+    public Room generate(World world, Dungeon dungeon, BBH bbh, BlockPos pos, BlockRotation rotation, int forward){
         //Don't generate if forward is set to 0
         if (forward<=0){
             return this;
@@ -101,6 +109,12 @@ public class Room implements Cloneable {
         //Don't generate if world is null
         if (world == null){
             return this;
+        }
+
+        if (dungeon!=null){
+            if (dungeon.rooms>dungeon.settings.maxRooms){
+                return this;
+            }
         }
 
         //Rotate room's bounding box
@@ -127,7 +141,7 @@ public class Room implements Cloneable {
             );
         }
 
-        generatedRooms.add(this.getRoomSize().offset(pos));
+        bbh.boxes.add(this.getRoomSize().offset(pos));
 
         //Go through each door
         if (this.getDoors()!=null && !this.getDoors().isEmpty()) {
@@ -146,8 +160,11 @@ public class Room implements Cloneable {
 
                 //Generate additional rooms
                 if (forward-1>0) {
-                    this.generateBranches(world, generatedRooms, pos, door,forward);
+                    this.generateBranches(world, dungeon,bbh, pos, door,forward);
                 } else {
+                    if (dungeon!=null) {
+                        dungeon.lastRooms.add(new LastRoom(this.getRoomSize().offset(pos),door,this.getStructureName()));
+                    }
                     DeadEnd deadEnd = DeadEndRegistry.getType(this.getSettings().getDeadEnd().toIdentifier());
                     deadEnd.generate(world,door,pos);
                 }
@@ -166,7 +183,7 @@ public class Room implements Cloneable {
         return new Box(min,max);
     }
 
-    public void generateBranches(World world,List<Box> generatedRooms, BlockPos pos, Door door, int forward) {
+    public void generateBranches(World world, Dungeon dungeon,BBH bbh, BlockPos pos, Door door, int forward) {
         //Find matching rooms
         List<MatchingRoom> matchingRooms = RoomRegistry.getWithMatchingDoor(door.clone());
         //remove if groups don't match
@@ -184,18 +201,20 @@ public class Room implements Cloneable {
             Box box = randomRoom.rotateRoomSize(matchingRoom.getRotation(),BlockPos.ofFloored(randomRoom.getRoomSize().getCenter()));
             box = box.offset(roomPoint);
 
-            for (Box generatedRoom : generatedRooms) {
-                if (generatedRoom.equals(this.getRoomSize().offset(pos))) {
-                    if ((this.getSettings().mergeDoors()&&randomRoom.getSettings().mergeDoors())){
-                        continue;
+            if (bbh.boxes != null && !bbh.boxes.isEmpty()) {
+                for (Box generatedRoom : bbh.boxes) {
+                    if (generatedRoom.equals(this.getRoomSize().offset(pos))) {
+                        if ((this.getSettings().mergeDoors()&&randomRoom.getSettings().mergeDoors())){
+                            continue;
+                        }
                     }
-                }
-                if (HuskyMathHelper.intersects(box, generatedRoom)) {
-                    return true;
+                    if (HuskyMathHelper.intersects(box, generatedRoom)) {
+                        return true;
+                    }
                 }
             }
 
-            return false;
+            return bbh.checkInteractions(box);
         });
 
         if (!matchingRooms.isEmpty()){
@@ -211,14 +230,18 @@ public class Room implements Cloneable {
 
             randomRoom.getDoors().set(matchingRoom.getMatchingDoorIndex(),Door.EMPTY);
 
-            Room.protectedGenerate(randomRoom, world, generatedRooms,roomPoint,randomRotation, forward-1);
+            if (dungeon!=null) {
+                dungeon.rooms++;
+            }
+
+            Room.protectedGenerate(randomRoom, world, dungeon, bbh,roomPoint,randomRotation, forward-1);
         } else {
             DeadEnd deadEnd = DeadEndRegistry.getType(this.getSettings().getDeadEnd().toIdentifier());
             deadEnd.generate(world,door,pos);
         }
     }
 
-    private static MatchingRoom getRandomRoom(Random random, List<MatchingRoom> matchingRooms) {
+    public static MatchingRoom getRandomRoom(Random random, List<MatchingRoom> matchingRooms) {
         MatchingRoom matchingRoom = matchingRooms.get(0);
 
         //
@@ -240,6 +263,7 @@ public class Room implements Cloneable {
     }
 
     private BlockPos getNewRoomOrigin(BlockPos pos, Door door, BlockPos centerRandomDoor, Room randomRoom) {
+
         BlockPos roomPoint = door.getCenterBlock().add(pos);
 
         roomPoint = roomPoint.subtract(centerRandomDoor.add(pos));

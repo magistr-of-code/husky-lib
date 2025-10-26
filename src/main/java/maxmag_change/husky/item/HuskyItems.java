@@ -3,6 +3,7 @@ package maxmag_change.husky.item;
 import maxmag_change.husky.HuskyLib;
 import maxmag_change.husky.block.HuskyBlocks;
 import maxmag_change.husky.item.custom.DoorSelectorItem;
+import maxmag_change.husky.item.custom.DungeonGeneratorItem;
 import maxmag_change.husky.item.custom.RoomGeneratorItem;
 import maxmag_change.husky.item.custom.RoomSelectorItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -19,6 +20,7 @@ public class HuskyItems {
     public static final Item DOOR_SELECTOR = registerItem("door_selector",new DoorSelectorItem(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item ROOM_SELECTOR = registerItem("room_selector",new RoomSelectorItem(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)));
     public static final Item ROOM_GENERATOR = registerItem("room_generator",new RoomGeneratorItem(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)));
+    public static final Item DUNGEON_GENERATOR = registerItem("dungeon_generator",new DungeonGeneratorItem(new FabricItemSettings().maxCount(1).rarity(Rarity.EPIC)));
 
     private static void addItemsToFunctionalItemGroup(FabricItemGroupEntries entries) {
         entries.add(HuskyBlocks.MAX_PLUSHIE);
@@ -29,6 +31,7 @@ public class HuskyItems {
         entries.add(DOOR_SELECTOR);
         entries.add(ROOM_SELECTOR);
         entries.add(ROOM_GENERATOR);
+        entries.add(DUNGEON_GENERATOR);
     }
 
     private static Item registerItem(String name, Item item) {
