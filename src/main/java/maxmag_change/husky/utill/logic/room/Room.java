@@ -10,6 +10,7 @@ import maxmag_change.husky.utill.logic.dungeon.BBH;
 import maxmag_change.husky.utill.logic.dungeon.Dungeon;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
@@ -111,10 +112,15 @@ public class Room implements Cloneable {
             return this;
         }
 
+        if (!world.isAreaLoaded(pos,16)){
+            return this;
+        }
+
         if (dungeon!=null){
             if (dungeon.rooms>dungeon.settings.maxRooms){
                 return this;
             }
+            dungeon.rooms++;
         }
 
         //Rotate room's bounding box
@@ -163,7 +169,7 @@ public class Room implements Cloneable {
                     this.generateBranches(world, dungeon,bbh, pos, door,forward);
                 } else {
                     if (dungeon!=null) {
-                        dungeon.lastRooms.add(new LastRoom(this.getRoomSize().offset(pos),door,this.getStructureName()));
+                        dungeon.lastRooms.add(new LastRoom(this.getRoomSize().offset(pos),door,pos,RoomRegistry.getRegistryName(this.getStructureName())));
                     }
                     DeadEnd deadEnd = DeadEndRegistry.getType(this.getSettings().getDeadEnd().toIdentifier());
                     deadEnd.generate(world,door,pos);
@@ -208,7 +214,7 @@ public class Room implements Cloneable {
                             continue;
                         }
                     }
-                    if (HuskyMathHelper.intersects(box, generatedRoom)) {
+                    if (box.intersects(generatedRoom)) {
                         return true;
                     }
                 }
@@ -229,10 +235,6 @@ public class Room implements Cloneable {
             BlockPos roomPoint = getNewRoomOrigin(pos, door, centerRandomDoor, randomRoom);
 
             randomRoom.getDoors().set(matchingRoom.getMatchingDoorIndex(),Door.EMPTY);
-
-            if (dungeon!=null) {
-                dungeon.rooms++;
-            }
 
             Room.protectedGenerate(randomRoom, world, dungeon, bbh,roomPoint,randomRotation, forward-1);
         } else {

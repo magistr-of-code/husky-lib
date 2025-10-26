@@ -29,6 +29,18 @@ public class RoomRegistry {
         register(identifier,new Room(identifier,roomSize,doors,settings));
     }
 
+    public static Identifier getRegistryName(Identifier identifier) {
+        final Identifier[] outPut = new Identifier[1];
+
+        registrations.forEach((identifier1, room) -> {
+            if (room.getStructureName()==identifier){
+                outPut[0] = identifier1;
+            }
+        });
+
+        return outPut[0];
+    }
+
     public static Room getType(Identifier identifier) {
         return registrations.get(identifier);
     }

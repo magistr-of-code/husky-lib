@@ -3,34 +3,47 @@ package maxmag_change.husky.utill.logic.room;
 import maxmag_change.husky.utill.logic.door.Door;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 
 public class LastRoom {
     public Box box;
     public Door door;
+    public BlockPos pos;
     public Identifier identifier;
 
-    public LastRoom(Box box, Door door, Identifier identifier){
+    public LastRoom(Box box, Door door, BlockPos pos, Identifier identifier){
         this.box=box;
         this.door=door;
+        this.pos=pos;
         this.identifier=identifier;
     }
 
     public static LastRoom readFromNbt(NbtCompound compound) {
+        NbtCompound box = compound.getCompound("box");
+
         Box box1 = new Box(
-                compound.getDouble("minX"),
-                compound.getDouble("minY"),
-                compound.getDouble("minZ"),
-                compound.getDouble("maxX"),
-                compound.getDouble("maxY"),
-                compound.getDouble("maxZ")
+                box.getDouble("minX"),
+                box.getDouble("minY"),
+                box.getDouble("minZ"),
+                box.getDouble("maxX"),
+                box.getDouble("maxY"),
+                box.getDouble("maxZ")
         );
 
-        return new LastRoom(box1,Door.readNbt(compound),Identifier.tryParse(compound.getString("identifier")));
+        NbtCompound posC = compound.getCompound("pos");
+
+        BlockPos pos = new BlockPos(
+                posC.getInt("x"),
+                posC.getInt("y"),
+                posC.getInt("z")
+        );
+
+        return new LastRoom(box1,Door.readNbt(compound),pos,Identifier.tryParse(compound.getString("identifier")));
     }
 
     public void writeToNbt(NbtCompound compound, String key) {
-        NbtCompound lastRoomCompound = new NbtCompound();
 
         NbtCompound boxNBT = new NbtCompound();
 
@@ -41,10 +54,18 @@ public class LastRoom {
         boxNBT.putDouble("maxY",box.maxY);
         boxNBT.putDouble("maxZ",box.maxZ);
 
-        lastRoomCompound.put("box" ,boxNBT);
+        compound.put("box" ,boxNBT);
+
+        NbtCompound posC = new NbtCompound();
+
+        posC.putInt("x",pos.getX());
+        posC.putInt("y",pos.getY());
+        posC.putInt("z",pos.getZ());
+
+        compound.put("pos",posC);
 
         door.writeNbt(compound);
 
-        lastRoomCompound.putString("identifier",identifier.toString());
+        compound.putString("identifier",identifier.toString());
     }
 }

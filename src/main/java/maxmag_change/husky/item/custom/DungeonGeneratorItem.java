@@ -34,7 +34,7 @@ public class DungeonGeneratorItem extends Item {
             if (room!=null) {
                 HuskyLib.LOGGER.error(room.toString());
 
-                Dungeon dungeon = new Dungeon(new CustomIdentifier(startingRoom.getNamespace(),startingRoom.getPath()),"vanilla",10000);
+                Dungeon dungeon = new Dungeon(new CustomIdentifier(startingRoom.getNamespace(),startingRoom.getPath()),"vanilla",100);
 
                 dungeon.createDungeon((ServerWorld) world,context.getBlockPos());
             }

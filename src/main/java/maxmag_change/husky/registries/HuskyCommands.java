@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import maxmag_change.husky.HuskyLib;
+import maxmag_change.husky.cca.HuskyWorldComponents;
 import maxmag_change.husky.utill.logic.door.Door;
 import maxmag_change.husky.utill.logic.dungeon.BBH;
 import maxmag_change.husky.utill.logic.dungeon.Dungeon;
@@ -12,6 +14,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.*;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -59,6 +62,10 @@ public class HuskyCommands {
                                     .then(CommandManager.argument("group", StringArgumentType.string())
                                             .then(CommandManager.argument("maxRooms", IntegerArgumentType.integer())
                                                     .executes(HuskyCommands::createDungeon))))));
+            dispatcher.register(CommandManager.literal("dungeon")
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
+                    .then(CommandManager.literal("update")
+                            .executes(HuskyCommands::updateDungeons)));
         });
     }
 
@@ -159,5 +166,24 @@ public class HuskyCommands {
             context.getSource().sendError(Text.literal("Couldn't find room ").append(Text.literal(startingRoom.toString()).styled(style -> style.withUnderline(true).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD,startingRoom.toString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,Text.of("Click to copy"))))));
             return 0;
         }
+    }
+
+    private static int updateDungeons(CommandContext<ServerCommandSource> context){
+
+        ServerWorld world = context.getSource().getWorld();
+
+        HuskyWorldComponents.DUNGEONS.get(world).idToDungeon.forEach((integer, dungeon) -> {
+            if (dungeon.lastRooms.isEmpty() || dungeon.rooms>dungeon.settings.maxRooms){
+                HuskyWorldComponents.DUNGEONS.get(world).idToDungeon.remove(dungeon.id,dungeon);
+            } else {
+                List<LastRoom> roomList = List.copyOf(dungeon.lastRooms);
+                roomList.forEach(lastRoom -> {
+                    dungeon.generateBranch(world,lastRoom);
+                    dungeon.lastRooms.remove(lastRoom);
+                });
+            }
+        });
+
+        return 1;
     }
 }

@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Mixin(ServerChunkManager.class)
@@ -29,13 +30,13 @@ public class ServerChunkManagerMixin {
         final Box chunkBox = new Box(chunkX*16-16,world.getBottomY(),chunkZ*16-16,chunkX*16,world.getTopY(),chunkZ*16);
         HuskyWorldComponents.DUNGEONS.get(world).idToDungeon.forEach((integer, dungeon) -> {
             if (dungeon.bbh.box.intersects(chunkBox)){
-                for (LastRoom lastRoom : dungeon.lastRooms) {
+                List<LastRoom> roomList = List.copyOf(dungeon.lastRooms);
+                roomList.forEach(lastRoom -> {
                     if (lastRoom.box.intersects(chunkBox)){
-                        HuskyLib.LOGGER.error("hai");
                         dungeon.generateBranch(world,lastRoom);
                         dungeon.lastRooms.remove(lastRoom);
                     }
-                }
+                });
             }
         });
     }

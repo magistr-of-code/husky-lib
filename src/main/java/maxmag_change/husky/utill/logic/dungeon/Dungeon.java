@@ -93,7 +93,8 @@ public class Dungeon {
 //        if (this.bbh.boxes.size()>10){
 //            bbh.recalculate();
 //        }
-        RoomRegistry.getType(lastRoom.identifier).generateBranches(world,this,this.bbh,new BlockPos((int) lastRoom.box.minX, (int) lastRoom.box.minY, (int) lastRoom.box.minZ),lastRoom.door,2);
+
+        RoomRegistry.getType(lastRoom.identifier).generateBranches(world,this,this.bbh,lastRoom.pos,lastRoom.door,2);
 
         if (this.lastRooms.isEmpty() || this.rooms>this.settings.maxRooms){
             HuskyWorldComponents.DUNGEONS.get(world).idToDungeon.remove(this.id,this);
