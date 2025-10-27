@@ -7,11 +7,12 @@ import maxmag_change.husky.utill.logic.dungeon.Dungeon;
 import maxmag_change.husky.utill.logic.dungeon.DungeonBox;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
 import java.util.UUID;
 
-public class DungeonComponent implements Component {
+public class DungeonComponent extends PersistentState implements Component {
     public World world;
     public Int2ObjectMap<Dungeon> idToDungeon = new Int2ObjectLinkedOpenHashMap<>();
 
@@ -25,13 +26,12 @@ public class DungeonComponent implements Component {
 
     @Override
     public void readFromNbt(NbtCompound nbtCompound) {
-        Int2ObjectMap<Dungeon> int2ObjectMap = new Int2ObjectLinkedOpenHashMap<>();
-        for (int i = 1; ; i++) {
+        for (int i = 1;; i++) {
             int id = nbtCompound.getInt("int" + i);
             if (id==0){
                 break;
             }
-            Dungeon dungeon = Dungeon.readFromNbt(nbtCompound,"key" + i);
+            Dungeon dungeon = Dungeon.readFromNbt(nbtCompound.getCompound("dungeon" + i));
             dungeon.id=id;
             idToDungeon.put(id,dungeon);
         }
@@ -42,8 +42,14 @@ public class DungeonComponent implements Component {
         final int[] values = {0};
         idToDungeon.forEach(((integer, dungeon) -> {
             nbtCompound.putInt("int" + values[0],integer);
-            dungeon.writeToNbt(nbtCompound,"dungeon" + values[0]);
+            nbtCompound.put("dungeon" + values[0],dungeon.writeToNbt(new NbtCompound()));
             values[0]++;
         }));
+    }
+
+    @Override
+    public NbtCompound writeNbt(NbtCompound nbtCompound) {
+        writeToNbt(nbtCompound);
+        return nbtCompound;
     }
 }

@@ -31,33 +31,37 @@ public class Dungeon {
         this.settings=new DungeonSettings(startingRoom,group,maxRooms);
     }
 
-    public static Dungeon readFromNbt(NbtCompound compound, String key) {
-        Dungeon dungeon = new Dungeon(DungeonSettings.readFromNbt(compound,"settings"));
-        dungeon.bbh = BBH.readFromNbt(compound,"bbh");
+    public static Dungeon readFromNbt(NbtCompound compound) {
+        Dungeon dungeon = new Dungeon(DungeonSettings.readFromNbt(compound.getCompound("settings")));
+        dungeon.bbh = BBH.readFromNbt(compound.getCompound("bbh"));
         List<LastRoom> lastRoomList = DefaultedList.of();
 
         for (int i = 0;; i++) {
-            NbtCompound lastRoomCompound = compound.getCompound("lastRoom"+i);
+            NbtCompound lastRoomCompound = compound.getCompound("lastRoom" + i);
 
-            if (Objects.equals(lastRoomCompound, new NbtCompound())){
+            if (lastRoomCompound.equals(new NbtCompound())){
                 break;
             }
 
             lastRoomList.add(LastRoom.readFromNbt(lastRoomCompound));
         }
 
+        dungeon.lastRooms=lastRoomList;
+
+        dungeon.rooms=compound.getInt("rooms");
+
         return dungeon;
     }
 
-    public void writeToNbt(NbtCompound compound, String key){
-        NbtCompound dungeon = new NbtCompound();
-        bbh.writeToNbt(dungeon,"bbh");
-        settings.writeToNbt(compound,"settings");
+    public NbtCompound writeToNbt(NbtCompound compound){
+        compound.put("bbh",bbh.writeToNbt(new NbtCompound()));
+        compound.put("settings",settings.writeToNbt(new NbtCompound()));
         for (int i = 0; i < lastRooms.size(); i++) {
-            LastRoom lastRoom = lastRooms.get(i);
-            lastRoom.writeToNbt(compound,"lastRoom" + i);
+            compound.put("lastRoom" + i,lastRooms.get(i).writeToNbt(new NbtCompound()));
         }
         compound.putInt("rooms",rooms);
+
+        return compound;
     }
 
     public void createDungeon(ServerWorld world,BlockPos pos){

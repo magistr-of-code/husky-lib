@@ -22,7 +22,7 @@ public class DungeonSettings {
         this(startingRoom,group,-1);
     }
 
-    public static DungeonSettings readFromNbt(NbtCompound compound, String key) {
+    public static DungeonSettings readFromNbt(NbtCompound compound) {
         Identifier identifier = Identifier.tryParse(compound.getString("startingRoom"));
         return new DungeonSettings(new CustomIdentifier(identifier.getNamespace(),identifier.getPath()),compound.getString("group"),compound.getInt("maxRooms"));
     }
@@ -46,10 +46,11 @@ public class DungeonSettings {
                 '}';
     }
 
-    public void writeToNbt(NbtCompound compound, String key) {
+    public NbtCompound writeToNbt(NbtCompound compound) {
         compound.putString("startingRoom",startingRoom.toString());
         compound.putString("group",group);
         compound.putInt("maxRooms",maxRooms);
+        return compound;
     }
 }
 

@@ -9,6 +9,7 @@ import maxmag_change.husky.cca.HuskyWorldComponents;
 import maxmag_change.husky.utill.logic.door.Door;
 import maxmag_change.husky.utill.logic.dungeon.BBH;
 import maxmag_change.husky.utill.logic.dungeon.Dungeon;
+import maxmag_change.husky.utill.logic.dungeon.DungeonSettings;
 import maxmag_change.husky.utill.logic.room.*;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -30,42 +31,53 @@ public class HuskyCommands {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             //Reload Rooms
             dispatcher.register(CommandManager.literal("rooms")
-                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
                     .then(CommandManager.literal("reload")
                             .executes(commandContext -> {RoomRegistry.loadRooms(commandContext.getSource().getServer().getResourceManager()); return 1;})));
 
             //Generate rooms
             dispatcher.register(CommandManager.literal("rooms")
-                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
                     .then(CommandManager.literal("generate")
                             .then(CommandManager.argument("name", IdentifierArgumentType.identifier()).then(CommandManager.argument("forward", IntegerArgumentType.integer()).executes(HuskyCommands::generate)))));
             //Get group of room
             dispatcher.register(CommandManager.literal("rooms")
-                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
                     .then(CommandManager.literal("get")
                             .then(CommandManager.literal("group").then(CommandManager.argument("name", IdentifierArgumentType.identifier()).executes(HuskyCommands::getGroup)))));
             //Get json from room
             dispatcher.register(CommandManager.literal("rooms")
-                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
                     .then(CommandManager.literal("get")
                             .then(CommandManager.literal("json").then(CommandManager.argument("name", IdentifierArgumentType.identifier()).executes(HuskyCommands::getJson)))));
             //Get room from group
             dispatcher.register(CommandManager.literal("rooms")
-                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
                     .then(CommandManager.literal("get")
                             .then(CommandManager.literal("from").then(CommandManager.literal("group").then(CommandManager.argument("name", StringArgumentType.string()).executes(HuskyCommands::getByGroup))))));
             //Dungeon creation
             dispatcher.register(CommandManager.literal("dungeon")
-                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
                     .then(CommandManager.literal("create")
                             .then(CommandManager.argument("startingRoom", IdentifierArgumentType.identifier())
                                     .then(CommandManager.argument("group", StringArgumentType.string())
                                             .then(CommandManager.argument("maxRooms", IntegerArgumentType.integer())
                                                     .executes(HuskyCommands::createDungeon))))));
+            //Dungeon updates
             dispatcher.register(CommandManager.literal("dungeon")
-                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
                     .then(CommandManager.literal("update")
                             .executes(HuskyCommands::updateDungeons)));
+            dispatcher.register(CommandManager.literal("dungeon")
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+                    .then(CommandManager.literal("get")
+                            .then(CommandManager.literal("all")
+                                    .executes(HuskyCommands::getDungeons))));
+            dispatcher.register(CommandManager.literal("dungeon")
+                    .requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+                    .then(CommandManager.literal("get")
+                            .then(CommandManager.argument("id", IntegerArgumentType.integer())
+                                    .executes(HuskyCommands::getDungeon))));
         });
     }
 
@@ -185,5 +197,48 @@ public class HuskyCommands {
         });
 
         return 1;
+    }
+
+    private static int getDungeons(CommandContext<ServerCommandSource> context){
+        ServerWorld world = context.getSource().getWorld();
+
+        final MutableText[] text = {Text.literal("Found " + HuskyWorldComponents.DUNGEONS.get(world).idToDungeon.size() + " dungeons:")};
+
+        HuskyWorldComponents.DUNGEONS.get(world).idToDungeon.forEach((integer, dungeon) -> {
+            text[0] = text[0].append(" " + (integer) +":").styled(style -> style.withUnderline(true).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/dungeon get " + integer)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,Text.of("Click to know more"))));
+        });
+
+        context.getSource().sendFeedback(()->text[0],false);
+
+        return 1;
+    }
+
+    private static int getDungeon(CommandContext<ServerCommandSource> context){
+        ServerWorld world = context.getSource().getWorld();
+
+        int id = context.getArgument("id", Integer.class);
+
+        Dungeon dungeon = HuskyWorldComponents.DUNGEONS.get(world).idToDungeon.get(id);
+
+        if (dungeon!=null){
+            MutableText feedback = Text.literal("Found dungeon with id " + id);
+            //feedback = feedback.append(Text.literal("BBH: " + dungeon.bbh.box.toString()));
+            MutableText text = Text.literal("\n Last Rooms: ");
+            List<LastRoom> lastRooms = dungeon.lastRooms;
+            for (int i = 0; i < lastRooms.size(); i++) {
+                LastRoom lastRoom = lastRooms.get(i);
+                text = text.append(Text.literal(lastRoom.toString()));
+            }
+            feedback = feedback.append(text);
+            feedback = feedback.append(Text.literal("\n Settings: " + dungeon.settings.toString()));
+            feedback = feedback.append(Text.literal("\n Rooms: " + dungeon.rooms));
+            context.getSource().sendMessage(feedback);
+            MutableText finalFeedback = feedback;
+            context.getSource().sendFeedback(()-> finalFeedback,false);
+            return 1;
+        } else {
+            context.getSource().sendError(Text.literal("Couldn't find a dungeon with id " + id));
+            return 0;
+        }
     }
 }

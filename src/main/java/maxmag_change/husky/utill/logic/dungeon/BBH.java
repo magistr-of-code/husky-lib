@@ -3,6 +3,7 @@ package maxmag_change.husky.utill.logic.dungeon;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +25,7 @@ public class BBH extends DungeonBox {
         BBH.split(this);
     }
 
-    public static BBH readFromNbt(NbtCompound compound, String key) {
+    public static BBH readFromNbt(NbtCompound compound) {
 
         List<Box> boxList = DefaultedList.of();
 
@@ -44,10 +45,25 @@ public class BBH extends DungeonBox {
             ));
         }
 
-        return new BBH(boxList);
+        BBH bbh = new BBH(boxList);
+
+        NbtCompound box = compound.getCompound("box");
+        if (!Objects.equals(box, new NbtCompound())) {
+
+            bbh.box=new Box(
+                    box.getDouble("minX"),
+                    box.getDouble("minY"),
+                    box.getDouble("minZ"),
+                    box.getDouble("maxX"),
+                    box.getDouble("maxY"),
+                    box.getDouble("maxZ")
+            );
+        }
+
+        return bbh;
     }
 
-    public void writeToNbt(NbtCompound compound,String key){
+    public NbtCompound writeToNbt(NbtCompound compound){
         List<Box> boxList=boxes;
 
         if (boxList==null){
@@ -74,5 +90,20 @@ public class BBH extends DungeonBox {
 
             compound.put("box" + i,boxNBT);
         }
+
+        if (box!=null) {
+            NbtCompound boxNBT = new NbtCompound();
+
+            boxNBT.putDouble("minX",box.minX);
+            boxNBT.putDouble("minY",box.minY);
+            boxNBT.putDouble("minZ",box.minZ);
+            boxNBT.putDouble("maxX",box.maxX);
+            boxNBT.putDouble("maxY",box.maxY);
+            boxNBT.putDouble("maxZ",box.maxZ);
+
+            compound.put("box",boxNBT);
+        }
+
+        return compound;
     }
 }

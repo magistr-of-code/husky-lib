@@ -52,7 +52,11 @@ public class DungeonBox {
             boxes.addAll(this.boxes);
         }
 
-        childA.addBoxes(boxes);
-        childB.addBoxes(boxes);
+        if (childA!=null) {
+            childA.addBoxes(boxes);
+        }
+        if (childB!=null) {
+            childB.addBoxes(boxes);
+        }
     }
 }

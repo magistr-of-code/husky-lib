@@ -43,7 +43,7 @@ public class LastRoom {
         return new LastRoom(box1,Door.readNbt(compound),pos,Identifier.tryParse(compound.getString("identifier")));
     }
 
-    public void writeToNbt(NbtCompound compound, String key) {
+    public NbtCompound writeToNbt(NbtCompound compound) {
 
         NbtCompound boxNBT = new NbtCompound();
 
@@ -67,5 +67,16 @@ public class LastRoom {
         door.writeNbt(compound);
 
         compound.putString("identifier",identifier.toString());
+
+        return compound;
+    }
+
+    @Override
+    public String toString() {
+        return "LastRoom{" +
+                "box=" + box.toString() +
+                ", pos=" + pos.toString() +
+                ", identifier=" + identifier.toString() +
+                '}';
     }
 }

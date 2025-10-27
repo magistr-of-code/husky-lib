@@ -27,17 +27,17 @@ public class ServerChunkManagerMixin {
 
     @Inject(method = "getChunkFuture(IILnet/minecraft/world/chunk/ChunkStatus;Z)Ljava/util/concurrent/CompletableFuture;",at=@At("HEAD"))
     private void getChunkFuture(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create, CallbackInfoReturnable<CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> cir) {
-        final Box chunkBox = new Box(chunkX*16-16,world.getBottomY(),chunkZ*16-16,chunkX*16,world.getTopY(),chunkZ*16);
-        HuskyWorldComponents.DUNGEONS.get(world).idToDungeon.forEach((integer, dungeon) -> {
-            if (dungeon.bbh.box.intersects(chunkBox)){
-                List<LastRoom> roomList = List.copyOf(dungeon.lastRooms);
-                roomList.forEach(lastRoom -> {
-                    if (lastRoom.box.intersects(chunkBox)){
-                        dungeon.generateBranch(world,lastRoom);
-                        dungeon.lastRooms.remove(lastRoom);
-                    }
-                });
-            }
-        });
+//        final Box chunkBox = new Box(chunkX*16-16,world.getBottomY(),chunkZ*16-16,chunkX*16,world.getTopY(),chunkZ*16);
+//        HuskyWorldComponents.DUNGEONS.get(world).idToDungeon.forEach((integer, dungeon) -> {
+//            if (dungeon.bbh.box.intersects(chunkBox)){
+//                List<LastRoom> roomList = List.copyOf(dungeon.lastRooms);
+//                roomList.forEach(lastRoom -> {
+//                    if (lastRoom.box.intersects(chunkBox)){
+//                        dungeon.generateBranch(world,lastRoom);
+//                        dungeon.lastRooms.remove(lastRoom);
+//                    }
+//                });
+//            }
+//        });
     }
 }
